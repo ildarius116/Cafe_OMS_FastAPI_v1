@@ -1,12 +1,16 @@
 from typing import Annotated
 from fastapi import Path
+from pathlib import Path
 from pydantic_settings import BaseSettings
+
+BASE_DIR = Path(__file__).parent.parent
 
 
 class Settings(BaseSettings):
-    db_url: str = "sqlite+aiosqlite:///./cafe.db"
+    api_v1_prefix: str = "/api/v1"
+
+    db_url: str = f"sqlite+aiosqlite:///{BASE_DIR}/cafe.db"
     debug: bool = True
-    pk_type = Annotated[int, Path(ge=1, lt=1_000_000)]
 
 
 settings = Settings()

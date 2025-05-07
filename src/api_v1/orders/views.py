@@ -6,7 +6,7 @@ from src.core.config import settings
 
 load_dotenv()
 
-router = APIRouter(prefix="/orders", tags=["Работа с заказами"])
+router = APIRouter()
 
 pk_type = Annotated[int, Path(ge=1, lt=1_000_000)]
 

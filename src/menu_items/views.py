@@ -16,7 +16,7 @@ load_dotenv()
 
 router = APIRouter(prefix="/menu-items", tags=["Работа с элементами Меню"])
 
-pk_type = settings.pk_type
+pk_type = Annotated[int, Path(ge=1, lt=1_000_000)]
 
 
 @router.get(
