@@ -2,19 +2,27 @@ from fastapi import APIRouter, HTTPException, Path
 from typing import Dict, Any, List, Annotated
 from dotenv import load_dotenv
 
-from src.menu_items.crud import create_menu_item, read_menu_item, list_menu_items, update_menu_item, delete_menu_item
+from src.menu_items.crud import (
+    create_menu_item,
+    read_menu_item,
+    list_menu_items,
+    update_menu_item,
+    delete_menu_item,
+)
 from src.menu_items.schemas import MenuItemSchema
+from src.core.config import settings
 
 load_dotenv()
 
 router = APIRouter(prefix="/menu-items", tags=["Работа с элементами Меню"])
 
-pk_type = Annotated[int, Path(ge=1, lt=1_000_000)]
+pk_type = settings.pk_type
 
 
-@router.get(path="/",
-            summary="menu_item",
-            )
+@router.get(
+    path="/",
+    summary="menu_item",
+)
 async def menu_item_list() -> Dict[str, Any]:
     """
     Функция создания заказа.
@@ -25,9 +33,10 @@ async def menu_item_list() -> Dict[str, Any]:
     return message
 
 
-@router.get(path="/list/",
-            summary="menu_item_list",
-            )
+@router.get(
+    path="/list/",
+    summary="menu_item_list",
+)
 async def menu_items_list() -> Dict[str, Any]:
     """
     Функция создания заказа.
@@ -38,10 +47,11 @@ async def menu_items_list() -> Dict[str, Any]:
     return message
 
 
-@router.get(path="/new/",
-            # response_model=MenuItemSchema,
-            summary="menu_item_create",
-            )
+@router.get(
+    path="/new/",
+    # response_model=MenuItemSchema,
+    summary="menu_item_create",
+)
 async def menu_item_create(item: MenuItemSchema) -> Dict[str, Any]:
     """
     Функция создания заказа.
@@ -52,10 +62,11 @@ async def menu_item_create(item: MenuItemSchema) -> Dict[str, Any]:
     return message
 
 
-@router.post(path="/new/",
-             response_model=MenuItemSchema,
-             summary="menu_item_create",
-             )
+@router.post(
+    path="/new/",
+    response_model=MenuItemSchema,
+    summary="menu_item_create",
+)
 async def menu_item_create(request: MenuItemSchema) -> Dict[str, Any]:
     """
     Функция создания заказа.
@@ -68,9 +79,10 @@ async def menu_item_create(request: MenuItemSchema) -> Dict[str, Any]:
     return create_menu_item(item=request)
 
 
-@router.get(path="/{pk}/delete/",
-            summary="menu_item_delete",
-            )
+@router.get(
+    path="/{pk}/delete/",
+    summary="menu_item_delete",
+)
 async def menu_item_delete(pk: pk_type) -> Dict[str, Any]:
     """
     Функция создания заказа.
