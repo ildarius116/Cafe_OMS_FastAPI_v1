@@ -1,160 +1,133 @@
-from fastapi import APIRouter, HTTPException, Path
-from typing import Dict, Any, List, Annotated
+from fastapi import APIRouter, status, Depends
+from typing import Dict, Any, List
 from dotenv import load_dotenv
+from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.core.config import settings
+from src.api_v1.orders.crud import (
+    create_order,
+    get_order_list,
+    update_order,
+    delete_order,
+)
+from src.api_v1.orders.schemas import (
+    OrderSchema,
+    OrderUpdateSchema,
+    OrderUpdatePartialSchema,
+    OrdersSchema,
+    OrderBaseSchema,
+    OrderCreateSchema,
+)
+from src.core.models import db_helper, OrderModel
+from src.api_v1.orders.dependencies import get_order_by_id
+
 
 load_dotenv()
-
 router = APIRouter()
-
-pk_type = Annotated[int, Path(ge=1, lt=1_000_000)]
 
 
 @router.get(
     path="/",
-    summary="Orders list",
+    response_model=List[OrderSchema],
+    summary="Вывести список заказов",
 )
-async def order_list() -> Dict[str, Any]:
-    """
-    Функция получения списка заказов.
-
-    :возврат: html-страница списка заказов.
-    """
-    return {"massage": "order list"}
-
-
-@router.get(
-    path="/new/",
-    summary="order_create",
-)
-async def order_create() -> Dict[str, Any]:
+async def order_list(
+    session: AsyncSession = Depends(db_helper.session_dependency),
+):
     """
     Функция создания заказа.
 
     :возврат: html-страница списка заказов.
     """
-
-    return {"message": "new order"}
+    return await get_order_list(session=session)
 
 
 @router.post(
-    path="/new/",
-    summary="order_create",
+    path="/",
+    response_model=OrderSchema,
+    summary="Создать заказ",
+    status_code=status.HTTP_201_CREATED,
 )
-async def order_create(request) -> Dict[str, Any]:
+async def order_create(
+    order_in: OrderCreateSchema,
+    session: AsyncSession = Depends(db_helper.session_dependency),
+):
     """
-    Функция создания заказа.
-
-    :возврат: html-страница списка заказов.
+    name - название элемента Меню.
+    price - стоимость элемента Меню.
     """
-    message = {"message": "new order"}
-    return message
-
-
-@router.get(
-    path="/revenue/",
-    # response_model=AddressResponseSchema,
-    summary="revenue_report",
-)
-async def revenue_report() -> Dict[str, Any]:
-    """
-    Функция создания заказа.
-
-    :возврат: html-страница списка заказов.
-    """
-
-    message = {"message": "revenue_report"}
-    return message
-
-
-@router.post(
-    path="/items/{pk}/add/",
-    summary="order_item_add",
-)
-async def order_item_add(request, pk: pk_type) -> Dict[str, Any]:
-    """
-    Функция создания заказа.
-
-    :возврат: html-страница списка заказов.
-    """
-    message = {"message": "order_item_add", "pk": pk}
-    return message
-
-
-@router.post(
-    path="/items/{pk}/delete/",
-    # response_model=AddressResponseSchema,
-    summary="order_item_delete",
-)
-async def order_item_delete(request, pk: pk_type) -> Dict[str, Any]:
-    """
-    Функция создания заказа.
-
-    :возврат: html-страница списка заказов.
-    """
-    message = {"message": "order_item_delete", "pk": pk}
-    return message
+    print(f"order_create order_in: {order_in}")
+    return await create_order(session=session, order_in=order_in)
 
 
 @router.get(
     path="/{pk}/",
-    # response_model=AddressResponseSchema,
-    summary="order_detail",
+    response_model=OrderSchema,
+    summary="Вывести определенный заказ",
 )
-async def order_detail(pk: pk_type) -> Dict[str, Any]:
+async def order_one(
+    order: OrderModel = Depends(get_order_by_id),
+):
     """
-    Функция создания заказа.
-
-    :возврат: html-страница списка заказов.
+    pk - id элемента Меню.
     """
-    message = {"message": "order_detail", "pk": pk}
-    return message
+    return order
 
 
-@router.get(
-    path="/{pk}/edit/",
-    # response_model=AddressResponseSchema,
-    summary="order_update",
+@router.put(
+    path="/{pk}/",
+    response_model=OrderSchema,
+    summary="Полное обновление заказа",
 )
-async def order_update(pk: pk_type) -> Dict[str, Any]:
+async def order_update_full(
+    order_update: OrderUpdateSchema,
+    order: OrderModel = Depends(get_order_by_id),
+    session: AsyncSession = Depends(db_helper.session_dependency),
+):
     """
-    Функция создания заказа.
-
-    :возврат: html-страница списка заказов.
+    pk - id элемента Меню.
+    name - название элемента Меню.
+    price - стоимость элемента Меню.
     """
+    return await update_order(
+        session=session,
+        order=order,
+        order_update=order_update,
+    )
 
-    message = {"message": "order_update", "pk": pk}
-    return message
 
-
-@router.get(
-    path="/{pk}/edit/",
-    # response_model=AddressResponseSchema,
-    summary="order_update",
+@router.patch(
+    path="/{pk}/",
+    response_model=OrderSchema,
+    summary="Частичное обновление заказа",
 )
-async def order_update(request, pk: pk_type) -> Dict[str, Any]:
+async def order_update_partial(
+    order_update: OrderUpdatePartialSchema,
+    order: OrderModel = Depends(get_order_by_id),
+    session: AsyncSession = Depends(db_helper.session_dependency),
+):
     """
-    Функция создания заказа.
-
-    :возврат: html-страница списка заказов.
+    pk - id элемента Меню.
+    name - название элемента Меню.
+    price - стоимость элемента Меню.
     """
+    return await update_order(
+        session=session,
+        order=order,
+        order_update=order_update,
+        partial=True,
+    )
 
-    message = {"message": "order_update", "pk": pk}
-    return message
 
-
-@router.get(
-    path="/{pk}/delete/",
-    # response_model=AddressResponseSchema,
-    summary="order_delete",
+@router.delete(
+    path="/{pk}/",
+    summary="Удаление заказа",
+    status_code=status.HTTP_204_NO_CONTENT,
 )
-async def order_delete(pk: pk_type) -> Dict[str, Any]:
+async def order_delete(
+    order: OrderModel = Depends(get_order_by_id),
+    session: AsyncSession = Depends(db_helper.session_dependency),
+) -> None:
     """
-    Функция создания заказа.
-
-    :возврат: html-страница списка заказов.
+    pk - id элемента Меню.
     """
-
-    message = {"message": "order_delete", "pk": pk}
-    return message
+    await delete_order(session=session, order=order)

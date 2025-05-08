@@ -2,22 +2,18 @@ from typing import Annotated
 from fastapi import Path, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.api_v1.menu_items.crud import get_menu_items_one
-from src.core.models import db_helper, MenuItemModel
+from src.api_v1.orders.crud import get_order_one
+from src.core.models import db_helper, OrderModel
 
 
-async def get_menu_item_by_id(
+async def get_order_by_id(
     pk: Annotated[int, Path(ge=1, lt=1_000_000)],
     session: AsyncSession = Depends(db_helper.session_dependency),
-) -> MenuItemModel:
+) -> OrderModel:
     """
     Функция получения элемента меню по id..
     """
-    print(f"get_menu_item_by_id pk: {pk}")
-    print(f"get_menu_item_by_id session: {session}")
-    result = await get_menu_items_one(session=session, pk=pk)
-    print(f"get_menu_item_by_id result: {result}")
-
+    result = await get_order_one(session=session, pk=pk)
     if result:
         return result
     raise HTTPException(

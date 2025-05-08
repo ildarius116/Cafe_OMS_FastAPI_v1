@@ -23,6 +23,7 @@ async def create_menu_item(
 
 
 async def get_menu_items_one(session: AsyncSession, pk: int) -> MenuItemModel | None:
+    print(f"get_menu_item_by_id result: {session}")
     return await session.get(MenuItemModel, pk)
 
 

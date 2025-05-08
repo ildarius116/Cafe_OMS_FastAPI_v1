@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import List, Optional, Annotated
 from datetime import datetime
 from pydantic import BaseModel, Field
 
@@ -27,6 +27,22 @@ class OrderBaseSchema(BaseModel):
 
 class OrderSchema(OrderBaseSchema):
     id: int
+
+
+class OrderCreateSchema(BaseModel):
+    table_number: int = Field(ge=1, le=100, description="Номер стола")
+
+
+class OrderUpdateSchema(OrderBaseSchema):
+    pass
+
+
+class OrderUpdatePartialSchema(BaseModel):
+    table_number: Optional[int] = None
+    status: Optional[str] = None
+    order_items: Optional[List[OrderItemSchema]] = None
+    total_price: Optional[float] = None
+    # updated_at: Optional[datetime] = None
 
 
 class OrdersSchema(BaseModel):

@@ -10,4 +10,5 @@ __all__ = (
 from .base import Base
 from .db_helper import DatabaseHelper, db_helper
 from .menu_items import MenuItemModel
-from .orders import OrderModel, OrderItemModel
+from .order_items import OrderItemModel
+from .orders import OrderModel
