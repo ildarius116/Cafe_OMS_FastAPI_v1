@@ -38,6 +38,10 @@ async def order_list(
 
     :возврат: html-страница списка заказов.
     """
+    orders = await get_order_list(session=session)
+    for order in orders:
+        print(f"\n order: {order.id}, order: {order}")
+
     return await get_order_list(session=session)
 
 

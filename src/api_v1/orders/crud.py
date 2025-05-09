@@ -1,9 +1,7 @@
 from typing import List
-
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import joinedload, selectinload
-from sqlalchemy.engine import Result
 from src.api_v1.orders.schemas import (
     OrderBaseSchema,
     OrderSchema,
@@ -12,18 +10,16 @@ from src.api_v1.orders.schemas import (
     OrderUpdatePartialSchema,
     OrderCreateSchema,
 )
-from src.core.models import OrderModel
+from src.core.models import OrderModel, OrderMenuAssociation
 
 
 async def create_order(
     session: AsyncSession,
     order_in: OrderCreateSchema,
 ) -> OrderModel:
-    print(f"create_order order_in: {order_in}")
     order = OrderModel(**order_in.model_dump())
     print(f"create_order order: {order}")
-    order.order_items = []
-    # print(f"create_order order: {order}")
+    # order.order_items = []
     session.add(order)
     await session.commit()
     print(f"create_order order: {order}")
@@ -40,16 +36,17 @@ async def get_order_one(
 async def get_order_list(session: AsyncSession) -> List[OrderModel]:
     query = (
         select(OrderModel)
-        .options(selectinload(OrderModel.order_items))
+        .options(
+            selectinload(OrderModel.menu_items_details).joinedload(
+                OrderMenuAssociation.menu_item
+            ),
+        )
         .order_by(OrderModel.id)
     )
-    result: Result = await session.execute(query)
-    result = result.scalars().all()
-    # result = await session.scalars(query)
-    # for res in result:
-    #     print(f"get_order_list res: {res}")
-    #     print(f"get_order_list res.order_items: {res.order_items}")
-    return list(result)
+    orders = await session.scalars(query)
+    # orders = [order.to_read_model() for order in orders]
+    print(f"\n get_order_list orders: {orders}")
+    return list(orders)
 
 
 async def update_order(

@@ -3,11 +3,10 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from typing import Optional, List, TYPE_CHECKING
 from datetime import datetime
 
-# from src.api_v1.orders.schemas import OrderBaseSchema
 from src.core.models import Base
 
 if TYPE_CHECKING:
-    from src.core.models import OrderItemModel
+    from src.core.models.order_menu_association import OrderMenuAssociation
 
 
 class OrderModel(Base):
@@ -27,8 +26,12 @@ class OrderModel(Base):
         TIMESTAMP, server_default=func.now(), onupdate=func.now()
     )
 
-    order_items: Mapped[List["OrderItemModel"]] = relationship(
-        back_populates="order", cascade="all, delete-orphan"
+    # menu_items: Mapped[List["MenuItemModel"]] = relationship(
+    #     secondary="order_menu_association",
+    #     back_populates="orders",
+    # )
+    menu_items_details: Mapped[List["OrderMenuAssociation"]] = relationship(
+        back_populates="order",
     )
 
     # def calculate_total(self) -> float:
@@ -40,12 +43,12 @@ class OrderModel(Base):
     #     return super().save(*args, **kwargs)
 
     # def to_read_model(self):
-    #     return OrderBaseSchema(
+    #     return OrderSchema(
     #         id=self.id,
     #         table_number=self.table_number,
-    #         order_items=(
-    #             [item.to_read_model() for item in self.order_items]
-    #             if self.order_items
+    #         menu_items_details=(
+    #             [item.to_read_model() for item in self.menu_items_details]
+    #             if self.menu_items_details
     #             else []
     #         ),
     #         total_price=self.total_price,
@@ -56,7 +59,11 @@ class OrderModel(Base):
 
     def __repr__(self):
         return (
-            f"Order(id={self.id}, table_number={self.table_number}, "
-            f"total_price={self.total_price}, status={self.status}, "
-            f"created_at={self.created_at}, updated_at={self.updated_at})"
+            f"Order(id={self.id}, "
+            f"Order(order_items={self.menu_items_details}, "
+            f"table_number={self.table_number}, "
+            f"total_price={self.total_price}, "
+            f"status={self.status}, "
+            f"created_at={self.created_at}, "
+            f"updated_at={self.updated_at})"
         )

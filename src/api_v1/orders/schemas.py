@@ -1,21 +1,14 @@
-from typing import List, Optional, Annotated
+from typing import List, Optional, Annotated, TYPE_CHECKING, Any
 from datetime import datetime
 from pydantic import BaseModel, Field
 
-
-class OrderItemSchema(BaseModel):
-    order_id: int
-    menu_item_id: int
-    quantity: Optional[int]
-    price: Optional[float]
-
-    class Config:
-        from_attributes = True
+# if TYPE_CHECKING:
+# from src.core.models.order_menu_association import OrderMenuAssociation
 
 
 class OrderBaseSchema(BaseModel):
     table_number: int = Field(ge=1, le=100, description="Номер стола")
-    order_items: Optional[List[OrderItemSchema]] = None
+    menu_items_details: Optional[List["OrderMenuAssociationSchema"]] = None
     total_price: Optional[float] = Field(0, ge=0, description="Общая стоимость")
     status: str = Field(default="pending")
     created_at: Optional[datetime] = None
@@ -40,10 +33,20 @@ class OrderUpdateSchema(OrderBaseSchema):
 class OrderUpdatePartialSchema(BaseModel):
     table_number: Optional[int] = None
     status: Optional[str] = None
-    order_items: Optional[List[OrderItemSchema]] = None
+    menu_items_details: Optional[List["OrderMenuAssociationSchema"]] = None
     total_price: Optional[float] = None
     # updated_at: Optional[datetime] = None
 
 
 class OrdersSchema(BaseModel):
     lists: Optional[List[OrderSchema]] = None
+
+
+class OrderMenuAssociationSchema(BaseModel):
+    order_id: int
+    menu_item_id: int
+    price: float
+    quantity: int
+
+    class Config:
+        from_attributes = True

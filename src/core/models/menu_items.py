@@ -4,10 +4,8 @@ from typing import Optional, List, TYPE_CHECKING
 
 from src.core.models import Base
 
-# from src.api_v1.menu_items.schemas import MenuItemSchema
-
 if TYPE_CHECKING:
-    from src.core.models import OrderItemModel
+    from src.core.models.order_menu_association import OrderMenuAssociation
 
 
 class MenuItemModel(Base):
@@ -17,9 +15,17 @@ class MenuItemModel(Base):
     # price: Mapped[Optional[float]] = mapped_column(Numeric(8, 1), name="Цена")
     price: Mapped[Optional[float]] = mapped_column(Numeric(8, 1))
 
-    order_items: Mapped[List["OrderItemModel"]] = relationship(
-        back_populates="menu_item"
+    # orders: Mapped[List["OrderModel"]] = relationship(
+    #     secondary="order_menu_association",
+    #     back_populates="menu_items",
+    # )
+    orders_details: Mapped[List["OrderMenuAssociation"]] = relationship(
+        back_populates="menu_item",
     )
+
+    # order_items: Mapped[List["OrderItemModel"]] = relationship(
+    #     back_populates="menu_item"
+    # )
 
     # def to_read_model(self):
     #     return MenuItemSchema(
