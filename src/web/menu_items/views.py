@@ -2,14 +2,6 @@ from fastapi import APIRouter, HTTPException, Path
 from typing import Dict, Any, List, Annotated
 from dotenv import load_dotenv
 
-from src.menu_items.crud import (
-    create_menu_item,
-    read_menu_item,
-    list_menu_items,
-    update_menu_item,
-    delete_menu_item,
-)
-from src.menu_items.schemas import MenuItemSchema
 from src.core.config import settings
 
 load_dotenv()
@@ -74,9 +66,8 @@ async def menu_item_create(request: MenuItemSchema) -> Dict[str, Any]:
     :возврат: html-страница списка заказов.
     """
 
-    # message = {"message": "menu_item_create"}
-    # return message
-    return create_menu_item(item=request)
+    message = {"message": "menu_item_create"}
+    return message
 
 
 @router.get(
