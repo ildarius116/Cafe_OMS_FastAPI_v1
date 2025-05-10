@@ -57,14 +57,20 @@ async def add_menu_item_into_order(
     menu_item: MenuItemModel,
     quantity: int,
 ) -> OrderModel:
+    price = quantity * menu_item.price
     order.menu_items_details.append(
         OrderMenuAssociation(
             menu_item=menu_item,
             quantity=quantity,
-            price=quantity * menu_item.price,
+            price=price,
         )
     )
+    order_update = OrderUpdatePartialSchema(order_update=order.total_price + price)
+    order = await update_order(
+        session=session, order=order, order_update=order_update, partial=True
+    )
     await session.commit()
+    order = await get_order_by_id(session=session, pk=order.id)
     return order
 
 
@@ -77,7 +83,7 @@ async def update_order(
     for key, value in order_update.model_dump(exclude_unset=partial).items():
         setattr(order, key, value)
     await session.commit()
-    await session.refresh(order)
+    # await session.refresh(order)
     return order
 
 
