@@ -1,9 +1,25 @@
 from typing import Annotated
 from fastapi import Path, Depends, HTTPException, status
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload
 
-from src.api_v1.orders.crud import get_order_one
-from src.core.models import db_helper, OrderModel
+from src.core.models import db_helper, OrderModel, OrderMenuAssociation
+
+
+async def get_order_by_id_with_menu_items_assoc(session: AsyncSession, pk: int):
+    query = (
+        select(OrderModel)
+        .options(
+            selectinload(OrderModel.menu_items_details).joinedload(
+                OrderMenuAssociation.menu_item
+            ),
+        )
+        .where(OrderModel.id == pk)
+        .order_by(OrderModel.id)
+    )
+    order = await session.scalar(query)
+    return order
 
 
 async def get_order_by_id(
@@ -13,7 +29,7 @@ async def get_order_by_id(
     """
     Функция получения элемента меню по id..
     """
-    result = await get_order_one(session=session, pk=pk)
+    result = await get_order_by_id_with_menu_items_assoc(session=session, pk=pk)
     if result:
         return result
     raise HTTPException(

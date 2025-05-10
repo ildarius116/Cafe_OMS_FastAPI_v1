@@ -1,5 +1,5 @@
 from fastapi import APIRouter, status, Depends
-from typing import Dict, Any, List
+from typing import List
 from dotenv import load_dotenv
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -8,17 +8,17 @@ from src.api_v1.orders.crud import (
     get_order_list,
     update_order,
     delete_order,
+    add_menu_item_into_order,
 )
 from src.api_v1.orders.schemas import (
     OrderSchema,
     OrderUpdateSchema,
     OrderUpdatePartialSchema,
-    OrdersSchema,
-    OrderBaseSchema,
     OrderCreateSchema,
 )
 from src.core.models import db_helper, OrderModel
 from src.api_v1.orders.dependencies import get_order_by_id
+from src.api_v1.menu_items.dependencies import get_menu_item_by_id
 
 
 load_dotenv()
@@ -33,16 +33,9 @@ router = APIRouter()
 async def order_list(
     session: AsyncSession = Depends(db_helper.session_dependency),
 ):
-    """
-    Функция создания заказа.
-
-    :возврат: html-страница списка заказов.
-    """
+    """ """
     orders = await get_order_list(session=session)
-    for order in orders:
-        print(f"\n order: {order.id}, order: {order}")
-
-    return await get_order_list(session=session)
+    return orders
 
 
 @router.post(
@@ -56,10 +49,8 @@ async def order_create(
     session: AsyncSession = Depends(db_helper.session_dependency),
 ):
     """
-    name - название элемента Меню.
-    price - стоимость элемента Меню.
+    table_number - номер стола заказа.
     """
-    print(f"order_create order_in: {order_in}")
     return await create_order(session=session, order_in=order_in)
 
 
@@ -72,9 +63,35 @@ async def order_one(
     order: OrderModel = Depends(get_order_by_id),
 ):
     """
-    pk - id элемента Меню.
+    pk - id заказа.
     """
     return order
+
+
+@router.post(
+    path="/{pk}/",
+    response_model=OrderSchema,
+    summary="Добавить элемент Меню в заказ",
+)
+async def add_menu_item(
+    order: OrderModel = Depends(get_order_by_id),
+    menu_item_id: int = None,
+    quantity: int = 1,
+    session: AsyncSession = Depends(db_helper.session_dependency),
+):
+    """
+    pk - id заказа.\n
+    menu_item_id - id элемента Меню.\n
+    quantity - количество элементов Меню в заказе.\n
+    """
+    menu_item = await get_menu_item_by_id(session=session, pk=menu_item_id)
+    result = await add_menu_item_into_order(
+        session=session,
+        order=order,
+        menu_item=menu_item,
+        quantity=quantity,
+    )
+    return result
 
 
 @router.put(
@@ -88,9 +105,12 @@ async def order_update_full(
     session: AsyncSession = Depends(db_helper.session_dependency),
 ):
     """
-    pk - id элемента Меню.
-    name - название элемента Меню.
-    price - стоимость элемента Меню.
+    pk - id заказа.\n
+    table_number - номер стола заказа.\n
+    status - статус заказа.\n
+    table_number - номер стола заказа.\n
+    total_price - полная стоимость заказа.\n
+    menu_items_details - список элементов меню в заказе.\n
     """
     return await update_order(
         session=session,
@@ -110,9 +130,12 @@ async def order_update_partial(
     session: AsyncSession = Depends(db_helper.session_dependency),
 ):
     """
-    pk - id элемента Меню.
-    name - название элемента Меню.
-    price - стоимость элемента Меню.
+    pk - id заказа.\n
+    table_number - номер стола заказа.\n
+    status - статус заказа.\n
+    table_number - номер стола заказа.\n
+    total_price - полная стоимость заказа.\n
+    menu_items_details - список элементов меню в заказе.\n
     """
     return await update_order(
         session=session,
@@ -132,6 +155,6 @@ async def order_delete(
     session: AsyncSession = Depends(db_helper.session_dependency),
 ) -> None:
     """
-    pk - id элемента Меню.
+    pk - id заказа.
     """
     await delete_order(session=session, order=order)

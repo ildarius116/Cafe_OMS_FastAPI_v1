@@ -1,16 +1,15 @@
 from typing import List
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import joinedload, selectinload
+from sqlalchemy.orm import selectinload
+
+from src.api_v1.orders.dependencies import get_order_by_id
 from src.api_v1.orders.schemas import (
-    OrderBaseSchema,
-    OrderSchema,
-    OrdersSchema,
     OrderUpdateSchema,
     OrderUpdatePartialSchema,
     OrderCreateSchema,
 )
-from src.core.models import OrderModel, OrderMenuAssociation
+from src.core.models import OrderModel, OrderMenuAssociation, MenuItemModel
 
 
 async def create_order(
@@ -18,11 +17,15 @@ async def create_order(
     order_in: OrderCreateSchema,
 ) -> OrderModel:
     order = OrderModel(**order_in.model_dump())
-    print(f"create_order order: {order}")
-    # order.order_items = []
     session.add(order)
     await session.commit()
-    print(f"create_order order: {order}")
+    order = await session.scalar(
+        select(OrderModel)
+        .where(OrderModel.id == order.id)
+        .options(
+            selectinload(OrderModel.menu_items_details),
+        ),
+    )
     return order
 
 
@@ -30,7 +33,8 @@ async def get_order_one(
     session: AsyncSession,
     pk: int,
 ) -> OrderModel | None:
-    return await session.get(OrderModel, pk)
+    result = await get_order_by_id(session=session, pk=pk)
+    return result
 
 
 async def get_order_list(session: AsyncSession) -> List[OrderModel]:
@@ -44,9 +48,24 @@ async def get_order_list(session: AsyncSession) -> List[OrderModel]:
         .order_by(OrderModel.id)
     )
     orders = await session.scalars(query)
-    # orders = [order.to_read_model() for order in orders]
-    print(f"\n get_order_list orders: {orders}")
     return list(orders)
+
+
+async def add_menu_item_into_order(
+    session: AsyncSession,
+    order: OrderModel,
+    menu_item: MenuItemModel,
+    quantity: int,
+) -> OrderModel:
+    order.menu_items_details.append(
+        OrderMenuAssociation(
+            menu_item=menu_item,
+            quantity=quantity,
+            price=quantity * menu_item.price,
+        )
+    )
+    await session.commit()
+    return order
 
 
 async def update_order(
