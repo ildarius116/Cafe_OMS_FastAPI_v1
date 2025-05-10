@@ -1,5 +1,5 @@
 from fastapi import APIRouter, status, Depends
-from typing import Dict, Any, List
+from typing import List
 from dotenv import load_dotenv
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -11,8 +11,7 @@ from src.api_v1.menu_items.crud import (
 )
 from src.api_v1.menu_items.schemas import (
     MenuItemSchema,
-    MenuItemsSchema,
-    MenuItemBaseSchema,
+    MenuItemCreateSchema,
     MenuItemUpdateSchema,
     MenuItemUpdatePartialSchema,
 )
@@ -47,7 +46,7 @@ async def menu_items_list(
     status_code=status.HTTP_201_CREATED,
 )
 async def menu_item_create(
-    menu_item_in: MenuItemBaseSchema,
+    menu_item_in: MenuItemCreateSchema,
     session: AsyncSession = Depends(db_helper.session_dependency),
 ):
     """

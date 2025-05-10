@@ -1,9 +1,8 @@
-from typing import List, Optional, Annotated, TYPE_CHECKING, Any
+from typing import List, Optional
 from datetime import datetime
 from pydantic import BaseModel, Field
 
-# if TYPE_CHECKING:
-# from src.core.models.order_menu_association import OrderMenuAssociation
+from src.api_v1.order_menu_association.schemas import OrderMenuAssociationSchema
 
 
 class OrderBaseSchema(BaseModel):
@@ -40,13 +39,3 @@ class OrderUpdatePartialSchema(BaseModel):
 
 class OrdersSchema(BaseModel):
     lists: Optional[List[OrderSchema]] = None
-
-
-class OrderMenuAssociationSchema(BaseModel):
-    order_id: int
-    menu_item_id: int
-    price: float
-    quantity: int
-
-    class Config:
-        from_attributes = True

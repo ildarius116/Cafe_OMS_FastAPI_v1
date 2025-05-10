@@ -7,7 +7,13 @@ from sqlalchemy.orm import selectinload
 from src.core.models import db_helper, OrderModel, OrderMenuAssociation
 
 
-async def get_order_by_id_with_menu_items_assoc(session: AsyncSession, pk: int):
+async def get_order_by_id(
+    pk: Annotated[int, Path(ge=1, lt=1_000_000)],
+    session: AsyncSession = Depends(db_helper.session_dependency),
+) -> OrderModel:
+    """
+    Функция получения заказа по id.
+    """
     query = (
         select(OrderModel)
         .options(
@@ -18,21 +24,10 @@ async def get_order_by_id_with_menu_items_assoc(session: AsyncSession, pk: int):
         .where(OrderModel.id == pk)
         .order_by(OrderModel.id)
     )
-    order = await session.scalar(query)
-    return order
-
-
-async def get_order_by_id(
-    pk: Annotated[int, Path(ge=1, lt=1_000_000)],
-    session: AsyncSession = Depends(db_helper.session_dependency),
-) -> OrderModel:
-    """
-    Функция получения элемента меню по id..
-    """
-    result = await get_order_by_id_with_menu_items_assoc(session=session, pk=pk)
+    result = await session.scalar(query)
     if result:
         return result
     raise HTTPException(
         status_code=status.HTTP_404_NOT_FOUND,
-        detail=f"Menu item {pk} not found!",
+        detail=f"Order {pk} not found!",
     )

@@ -8,7 +8,6 @@ from src.api_v1.orders.crud import (
     get_order_list,
     update_order,
     delete_order,
-    add_menu_item_into_order,
 )
 from src.api_v1.orders.schemas import (
     OrderSchema,
@@ -18,7 +17,6 @@ from src.api_v1.orders.schemas import (
 )
 from src.core.models import db_helper, OrderModel
 from src.api_v1.orders.dependencies import get_order_by_id
-from src.api_v1.menu_items.dependencies import get_menu_item_by_id
 
 
 load_dotenv()
@@ -66,32 +64,6 @@ async def order_one(
     pk - id заказа.
     """
     return order
-
-
-@router.post(
-    path="/{pk}/",
-    response_model=OrderSchema,
-    summary="Добавить элемент Меню в заказ",
-)
-async def add_menu_item(
-    order: OrderModel = Depends(get_order_by_id),
-    menu_item_id: int = None,
-    quantity: int = 1,
-    session: AsyncSession = Depends(db_helper.session_dependency),
-):
-    """
-    pk - id заказа.\n
-    menu_item_id - id элемента Меню.\n
-    quantity - количество элементов Меню в заказе.\n
-    """
-    menu_item = await get_menu_item_by_id(session=session, pk=menu_item_id)
-    result = await add_menu_item_into_order(
-        session=session,
-        order=order,
-        menu_item=menu_item,
-        quantity=quantity,
-    )
-    return result
 
 
 @router.put(

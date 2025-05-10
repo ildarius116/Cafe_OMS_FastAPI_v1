@@ -1,0 +1,74 @@
+from fastapi import APIRouter, status, Depends
+from typing import List
+from dotenv import load_dotenv
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from src.api_v1.order_menu_association.dependencies import get_association_by_id
+from src.api_v1.order_menu_association.crud import (
+    add_menu_item_into_order,
+    del_menu_item_from_order,
+    get_associations_list,
+)
+from src.api_v1.order_menu_association.schemas import OrderMenuAssociationSchema
+from src.api_v1.orders.schemas import OrderSchema
+from src.core.models import db_helper, OrderModel, OrderMenuAssociation
+from src.api_v1.orders.dependencies import get_order_by_id
+from src.api_v1.menu_items.dependencies import get_menu_item_by_id
+
+
+load_dotenv()
+router = APIRouter()
+
+
+@router.get(
+    path="/",
+    response_model=List[OrderMenuAssociationSchema],
+    summary="Вывести список связей",
+)
+async def get_list(
+    session: AsyncSession = Depends(db_helper.session_dependency),
+):
+    """ """
+    result = await get_associations_list(session=session)
+    return result
+
+
+@router.post(
+    path="/{pk}/",
+    response_model=OrderSchema,
+    summary="Добавить элемент Меню в заказ",
+)
+async def add_into_order(
+    order: OrderModel = Depends(get_order_by_id),
+    menu_item_id: int = None,
+    quantity: int = 1,
+    session: AsyncSession = Depends(db_helper.session_dependency),
+):
+    """
+    pk - id заказа.\n
+    menu_item_id - id элемента Меню.\n
+    quantity - количество элементов Меню в заказе.\n
+    """
+    menu_item = await get_menu_item_by_id(session=session, pk=menu_item_id)
+    result = await add_menu_item_into_order(
+        session=session,
+        order=order,
+        menu_item=menu_item,
+        quantity=quantity,
+    )
+    return result
+
+
+@router.delete(
+    path="/{pk}/",
+    summary="Удаление элемента меню из заказа",
+    status_code=status.HTTP_204_NO_CONTENT,
+)
+async def del_from_order(
+    association: OrderMenuAssociation = Depends(get_association_by_id),
+    session: AsyncSession = Depends(db_helper.session_dependency),
+) -> None:
+    """
+    pk - id элемента связи.
+    """
+    await del_menu_item_from_order(session=session, association=association)

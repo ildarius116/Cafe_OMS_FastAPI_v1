@@ -9,7 +9,7 @@ from src.api_v1.orders.schemas import (
     OrderUpdatePartialSchema,
     OrderCreateSchema,
 )
-from src.core.models import OrderModel, OrderMenuAssociation, MenuItemModel
+from src.core.models import OrderModel, OrderMenuAssociation
 
 
 async def create_order(
@@ -51,29 +51,6 @@ async def get_order_list(session: AsyncSession) -> List[OrderModel]:
     return list(orders)
 
 
-async def add_menu_item_into_order(
-    session: AsyncSession,
-    order: OrderModel,
-    menu_item: MenuItemModel,
-    quantity: int,
-) -> OrderModel:
-    price = quantity * menu_item.price
-    order.menu_items_details.append(
-        OrderMenuAssociation(
-            menu_item=menu_item,
-            quantity=quantity,
-            price=price,
-        )
-    )
-    order_update = OrderUpdatePartialSchema(order_update=order.total_price + price)
-    order = await update_order(
-        session=session, order=order, order_update=order_update, partial=True
-    )
-    await session.commit()
-    order = await get_order_by_id(session=session, pk=order.id)
-    return order
-
-
 async def update_order(
     session: AsyncSession,
     order: OrderModel,
@@ -83,7 +60,6 @@ async def update_order(
     for key, value in order_update.model_dump(exclude_unset=partial).items():
         setattr(order, key, value)
     await session.commit()
-    # await session.refresh(order)
     return order
 
 
