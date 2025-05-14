@@ -1,11 +1,10 @@
 from fastapi import APIRouter, HTTPException, Path, Depends, Request, Form
-from fastapi.responses import FileResponse, HTMLResponse, RedirectResponse
+from fastapi.responses import RedirectResponse
 from typing import Dict, Any, Annotated
 from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi.templating import Jinja2Templates
 
 from src.api_v1.menu_items.crud import get_menu_items_list
-from src.api_v1.menu_items.dependencies import get_menu_item_by_id
 from src.api_v1.order_menu_association.crud import add_menu_item_into_order
 from src.api_v1.orders.crud import (
     get_order_list,
@@ -17,7 +16,7 @@ from src.api_v1.orders.dependencies import get_order_by_id
 from src.api_v1.menu_items.dependencies import get_menu_item_by_id
 from src.core.config import settings
 from src.core.models import db_helper, OrderModel
-from src.api_v1.orders.schemas import (
+from src.core.schemas.orders import (
     OrderUpdatePartialSchema,
     OrderCreateSchema,
 )
@@ -111,14 +110,7 @@ async def order_create(
     order_in = OrderCreateSchema(table_number=table_number, status=status)
     if table_number and status:
         order = await create_order(session=session, order_in=order_in)
-        return templates.TemplateResponse(
-            name="cafe/order_detail.html",
-            request=request,
-            context={
-                "order": order,
-                "menu_items": order.menu_items_details,
-            },
-        )
+        return RedirectResponse(url=f"/{order.id}/", status_code=301)
     return templates.TemplateResponse(
         name="cafe/order_form.html",
         request=request,

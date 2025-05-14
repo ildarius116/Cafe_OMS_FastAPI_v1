@@ -4,7 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
 from src.api_v1.orders.dependencies import get_order_by_id
-from src.api_v1.orders.schemas import (
+from src.core.schemas.orders import (
     OrderUpdateSchema,
     OrderUpdatePartialSchema,
     OrderCreateSchema,

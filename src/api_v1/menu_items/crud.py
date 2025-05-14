@@ -3,8 +3,7 @@ from typing import List
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.engine import Result
-from src.api_v1.menu_items.schemas import (
-    MenuItemSchema,
+from src.core.schemas.menu_items import (
     MenuItemCreateSchema,
     MenuItemUpdateSchema,
     MenuItemUpdatePartialSchema,

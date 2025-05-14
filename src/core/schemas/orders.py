@@ -2,7 +2,7 @@ from typing import List, Optional
 from datetime import datetime
 from pydantic import BaseModel, Field
 
-from src.api_v1.order_menu_association.schemas import OrderMenuAssociationSchema
+from src.core.schemas.order_menu_association import OrderMenuAssociationSchema
 
 
 class OrderBaseSchema(BaseModel):

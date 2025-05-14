@@ -9,8 +9,8 @@ from src.api_v1.order_menu_association.crud import (
     del_menu_item_from_order,
     get_associations_list,
 )
-from src.api_v1.order_menu_association.schemas import OrderMenuAssociationSchema
-from src.api_v1.orders.schemas import OrderSchema
+from src.core.schemas.order_menu_association import OrderMenuAssociationSchema
+from src.core.schemas.orders import OrderSchema
 from src.core.models import db_helper, OrderModel, OrderMenuAssociation
 from src.api_v1.orders.dependencies import get_order_by_id
 from src.api_v1.menu_items.dependencies import get_menu_item_by_id

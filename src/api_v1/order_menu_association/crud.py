@@ -4,7 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.api_v1.orders.crud import update_order
 from src.api_v1.orders.dependencies import get_order_by_id
-from src.api_v1.orders.schemas import OrderUpdatePartialSchema
+from src.core.schemas.orders import OrderUpdatePartialSchema
 from src.core.models import OrderModel, OrderMenuAssociation, MenuItemModel
 
 

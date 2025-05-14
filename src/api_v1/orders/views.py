@@ -9,7 +9,7 @@ from src.api_v1.orders.crud import (
     update_order,
     delete_order,
 )
-from src.api_v1.orders.schemas import (
+from src.core.schemas.orders import (
     OrderSchema,
     OrderUpdateSchema,
     OrderUpdatePartialSchema,

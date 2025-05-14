@@ -9,7 +9,7 @@ from src.api_v1.menu_items.crud import (
     update_menu_item,
     delete_menu_item,
 )
-from src.api_v1.menu_items.schemas import (
+from src.core.schemas.menu_items import (
     MenuItemSchema,
     MenuItemCreateSchema,
     MenuItemUpdateSchema,
