@@ -38,6 +38,6 @@ class OrderModel(Base):
             f"table_number={self.table_number}, "
             f"total_price={self.total_price}, "
             f"status={self.status}, "
-            f"created_at={self.created_at}, "
-            f"updated_at={self.updated_at})"
+            f"created_at={getattr(self, 'created_at', None)}, "
+            f"updated_at={getattr(self, 'updated_at', None)}"
         )

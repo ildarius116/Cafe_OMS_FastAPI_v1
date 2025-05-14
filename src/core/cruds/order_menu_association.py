@@ -1,5 +1,5 @@
 from typing import List
-from sqlalchemy import select
+from sqlalchemy import select, func
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.core.cruds.orders import update_order
@@ -27,10 +27,17 @@ async def add_menu_item_into_order(
             price=price,
         )
     )
-    order_update = OrderUpdatePartialSchema(order_update=order.total_price + price)
-    order = await update_order(
-        session=session, order=order, order_update=order_update, partial=True
+    order_update = OrderUpdatePartialSchema(
+        table_number=order.table_number,
+        total_price=order.total_price + price,
     )
+    order = await update_order(
+        session=session,
+        order=order,
+        order_update=order_update,
+        partial=True,
+    )
+
     await session.commit()
     return await session.get(OrderModel, order.id)
 

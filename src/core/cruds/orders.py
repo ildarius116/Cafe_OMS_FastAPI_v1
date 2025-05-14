@@ -61,6 +61,7 @@ async def update_order(
     for key, value in order_update.model_dump(exclude_unset=partial).items():
         setattr(order, key, value)
     await session.commit()
+    await session.refresh(order)
     return order
 
 

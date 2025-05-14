@@ -142,7 +142,6 @@ async def revenue_report(
         context={
             "paid_orders": paid_orders,
             "total_revenue": total_revenue,
-            "time_format": settings.time_format_revenue,
         },
     )
 
