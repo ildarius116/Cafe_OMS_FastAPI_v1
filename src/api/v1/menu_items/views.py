@@ -16,7 +16,7 @@ from src.core.schemas.menu_items import (
     MenuItemUpdatePartialSchema,
 )
 from src.core.models import db_helper, MenuItemModel
-from src.api.dependencies import get_menu_item_by_id
+from src.core.dependencies import get_menu_item_by_id
 
 
 load_dotenv()
