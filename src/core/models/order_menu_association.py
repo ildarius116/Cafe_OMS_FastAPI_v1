@@ -6,12 +6,12 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from src.core.models import Base
 
-# from src.api_v1.orders.schemas import OrderMenuAssociationSchema
+# from src.api.orders.schemas import OrderMenuAssociationSchema
 
 if TYPE_CHECKING:
     from src.core.models import OrderModel, MenuItemModel
 
-    # from src.api_v1.menu_items.schemas import MenuItemSchema
+    # from src.api.menu_items.schemas import MenuItemSchema
 
 
 class OrderMenuAssociation(Base):

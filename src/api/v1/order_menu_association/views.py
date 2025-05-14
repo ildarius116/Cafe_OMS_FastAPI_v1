@@ -3,7 +3,6 @@ from typing import List
 from dotenv import load_dotenv
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.api_v1.order_menu_association.dependencies import get_association_by_id
 from src.core.cruds.order_menu_association import (
     add_menu_item_into_order,
     del_menu_item_from_order,
@@ -12,9 +11,11 @@ from src.core.cruds.order_menu_association import (
 from src.core.schemas.order_menu_association import OrderMenuAssociationSchema
 from src.core.schemas.orders import OrderSchema
 from src.core.models import db_helper, OrderModel, OrderMenuAssociation
-from src.api_v1.orders.dependencies import get_order_by_id
-from src.api_v1.menu_items.dependencies import get_menu_item_by_id
-
+from src.api.dependencies import (
+    get_menu_item_by_id,
+    get_association_by_id,
+    get_order_by_id,
+)
 
 load_dotenv()
 router = APIRouter()

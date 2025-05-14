@@ -16,8 +16,7 @@ from src.core.schemas.orders import (
     OrderCreateSchema,
 )
 from src.core.models import db_helper, OrderModel
-from src.api_v1.orders.dependencies import get_order_by_id
-
+from src.api.dependencies import get_order_by_id
 
 load_dotenv()
 router = APIRouter()

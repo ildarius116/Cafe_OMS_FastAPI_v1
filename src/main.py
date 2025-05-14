@@ -4,7 +4,7 @@ from contextlib import asynccontextmanager
 from typing import AsyncGenerator, Any
 
 from src.core.config import settings
-from src.api_v1 import router as router_api_v1
+from src.api import router as router_api_v1
 from src.web import router as router_web
 
 from src.core.models import Base, db_helper

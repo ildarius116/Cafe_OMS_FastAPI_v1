@@ -4,8 +4,7 @@ from fastapi.templating import Jinja2Templates
 from typing import Dict, Any, Annotated
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.api_v1.orders.dependencies import get_order_by_id
-from src.api_v1.menu_items.dependencies import get_menu_item_by_id
+from src.api.dependencies import get_menu_item_by_id, get_order_by_id
 from src.core.config import settings
 from src.core.cruds.menu_items import get_menu_items_list
 from src.core.models import db_helper, OrderModel
