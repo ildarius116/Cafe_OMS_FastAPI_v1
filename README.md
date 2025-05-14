@@ -47,6 +47,7 @@ __Доступные адреса (эндпоинты) и функции:__
 * Клонировать: `git clone https://github.com/ildarius116/Cafe_OMS_FastAPI_v1`
 * Установить зависимости: `pip install poetry`
 * Установить зависимости: `poetry install`
+* Создать миграции: `alembic revision --autogenerate -m "initial"`
 * Применить миграции: `alembic upgrade head`
 * Запустить сервер: `uvicorn src.main:app`
 
