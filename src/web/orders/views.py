@@ -1,14 +1,21 @@
 from fastapi import APIRouter, HTTPException, Path, Depends, Request, Form
 from fastapi.responses import RedirectResponse
 from fastapi.templating import Jinja2Templates
-from typing import Dict, Any, Annotated
+from typing import Dict, Annotated
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.api.dependencies import get_menu_item_by_id, get_order_by_id
+from src.api.dependencies import (
+    get_menu_item_by_id,
+    get_order_by_id,
+    get_association_by_id,
+)
 from src.core.config import settings
 from src.core.cruds.menu_items import get_menu_items_list
-from src.core.models import db_helper, OrderModel
-from src.core.cruds.order_menu_association import add_menu_item_into_order
+from src.core.models import db_helper, OrderModel, OrderMenuAssociation
+from src.core.cruds.order_menu_association import (
+    add_menu_item_into_order,
+    del_menu_item_from_order,
+)
 from src.core.cruds.orders import (
     get_order_list,
     create_order,
@@ -43,12 +50,6 @@ async def index(
     table_number = request.query_params.get("table")
     status = request.query_params.get("status")
     fltr = {}
-    # message = {
-    #     "message": "index",
-    #     "table_number": table_number,
-    #     "status": status,
-    # }
-    # print("MESSAGE:", message)
     if table_number:
         fltr["table_number"] = table_number
     if status:
@@ -187,16 +188,16 @@ async def order_item_add(
     summary="order_item_delete",
 )
 async def order_item_delete(
-    request,
-    pk: pk_type,
-) -> Dict[str, Any]:
+    association: OrderMenuAssociation = Depends(get_association_by_id),
+    session: AsyncSession = Depends(db_helper.session_dependency),
+):
     """
     Функция создания заказа.
 
     :возврат: html-страница списка заказов.
     """
-    message = {"message": "order_item_delete", "pk": pk}
-    return message
+    order_id = await del_menu_item_from_order(session=session, association=association)
+    return RedirectResponse(url=f"/{order_id}/", status_code=301)
 
 
 @router.get(

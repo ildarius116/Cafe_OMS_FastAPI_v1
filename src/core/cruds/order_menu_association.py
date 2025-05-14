@@ -1,8 +1,8 @@
-from typing import List
+from typing import List, Any
 from sqlalchemy import select, func
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.core.cruds.orders import update_order
+from src.core.cruds.orders import update_order, get_order_one
 from src.core.models import OrderModel, OrderMenuAssociation, MenuItemModel
 from src.core.schemas.orders import OrderUpdatePartialSchema
 
@@ -27,17 +27,7 @@ async def add_menu_item_into_order(
             price=price,
         )
     )
-    order_update = OrderUpdatePartialSchema(
-        table_number=order.table_number,
-        total_price=order.total_price + price,
-    )
-    order = await update_order(
-        session=session,
-        order=order,
-        order_update=order_update,
-        partial=True,
-    )
-
+    order.total_price += price
     await session.commit()
     return await session.get(OrderModel, order.id)
 
@@ -45,6 +35,11 @@ async def add_menu_item_into_order(
 async def del_menu_item_from_order(
     session: AsyncSession,
     association: OrderMenuAssociation,
-) -> None:
+) -> Any:
+    order_id = association.order_id
+    item_price = association.price
     await session.delete(association)
+    order = await get_order_one(session=session, pk=order_id)
+    order.total_price -= item_price
     await session.commit()
+    return order_id
