@@ -9,9 +9,16 @@ DB_PATH = BASE_DIR / "cafe.db"
 
 class Settings(BaseSettings):
     api_v1_prefix: str = "/api/v1"
+    web_prefix: str = ""
 
     db_url: str = f"sqlite+aiosqlite:///{DB_PATH}"
     debug: bool = True
+
+    ORDER_STATUSES: dict = {
+        "pending": "В ожидании",
+        "ready": "Готово",
+        "paid": "Оплачено",
+    }
 
 
 settings = Settings()

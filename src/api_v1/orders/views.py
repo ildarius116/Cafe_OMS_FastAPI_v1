@@ -32,7 +32,14 @@ async def order_list(
     session: AsyncSession = Depends(db_helper.session_dependency),
 ):
     """ """
-    orders = await get_order_list(session=session)
+    table_number = None
+    status = None
+    fltr = {}
+    if table_number:
+        fltr["table_number"] = table_number
+    if status:
+        fltr["status"] = status
+    orders = await get_order_list(session=session, fltr=fltr)
     return orders
 
 

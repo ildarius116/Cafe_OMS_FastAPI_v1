@@ -7,7 +7,7 @@
     {% csrf_token %}
     {{ form.as_p }}
     <button type="submit" class="btn btn-primary">Сохранить</button>
-    <a href="{% url 'order_list' %}" class="btn btn-secondary">Отмена</a>
+    <a href="{{ url_for('home') }}" class="btn btn-secondary">Отмена</a>
 </form>
 {% if messages %}
 <div class="messages">

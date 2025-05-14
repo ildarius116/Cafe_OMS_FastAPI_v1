@@ -1,6 +1,6 @@
-from sqlalchemy import String, TIMESTAMP, func, Numeric, ForeignKey, CheckConstraint
+from sqlalchemy import String, TIMESTAMP, func, Numeric, CheckConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from typing import Optional, List, TYPE_CHECKING
+from typing import List, TYPE_CHECKING
 from datetime import datetime
 
 from src.core.models import Base
@@ -26,36 +26,10 @@ class OrderModel(Base):
         TIMESTAMP, server_default=func.now(), onupdate=func.now()
     )
 
-    # menu_items: Mapped[List["MenuItemModel"]] = relationship(
-    #     secondary="order_menu_association",
-    #     back_populates="orders",
-    # )
     menu_items_details: Mapped[List["OrderMenuAssociation"]] = relationship(
         back_populates="order",
+        cascade="all, delete-orphan",
     )
-
-    # def calculate_total(self) -> float:
-    #     return sum(item.price for item in self.order_items.all()) if self.pk else 0
-
-    # def save(self, *args, **kwargs):
-    #     if self.pk:
-    #         self.total_price = self.calculate_total()
-    #     return super().save(*args, **kwargs)
-
-    # def to_read_model(self):
-    #     return OrderSchema(
-    #         id=self.id,
-    #         table_number=self.table_number,
-    #         menu_items_details=(
-    #             [item.to_read_model() for item in self.menu_items_details]
-    #             if self.menu_items_details
-    #             else []
-    #         ),
-    #         total_price=self.total_price,
-    #         status=self.status,
-    #         created_at=self.created_at,
-    #         updated_at=self.updated_at,
-    #     )
 
     def __repr__(self):
         return (

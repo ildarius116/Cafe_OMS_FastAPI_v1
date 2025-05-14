@@ -23,10 +23,16 @@ class OrderSchema(OrderBaseSchema):
 
 class OrderCreateSchema(BaseModel):
     table_number: int = Field(ge=1, le=100, description="Номер стола")
+    status: str = Field(default="pending")
 
 
 class OrderUpdateSchema(OrderBaseSchema):
     pass
+
+
+class OrderFilterSchema(BaseModel):
+    table_number: Optional[int] = None
+    status: Optional[str] = None
 
 
 class OrderUpdatePartialSchema(BaseModel):

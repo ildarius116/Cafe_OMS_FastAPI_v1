@@ -25,18 +25,20 @@
                     </tr>
                 </thead>
                 <tbody>
+                    {% if paid_orders %}
                     {% for order in paid_orders %}
                     <tr>
                         <td>{{ order.id }}</td>
                         <td>{{ order.table_number }}</td>
                         <td>{{ order.total_price }} ₽</td>
-                        <td>{{ order.updated_at|date:"d.m.Y H:i" }}</td>
+                        <td>{{ order.updated_at.strftime("%d.%m.%Y - %H:%m") }}</td>
                     </tr>
-                    {% empty %}
+                    {% else %}
                     <tr>
                         <td colspan="4" class="text-center">Нет оплаченных заказов</td>
                     </tr>
                     {% endfor %}
+                    {% endif %}
                 </tbody>
             </table>
         </div>

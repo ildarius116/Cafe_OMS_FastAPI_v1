@@ -37,7 +37,9 @@ async def get_order_one(
     return result
 
 
-async def get_order_list(session: AsyncSession) -> List[OrderModel]:
+async def get_order_list(session: AsyncSession, fltr=None) -> List[OrderModel]:
+    if not fltr:
+        fltr = {}
     query = (
         select(OrderModel)
         .options(
@@ -45,6 +47,7 @@ async def get_order_list(session: AsyncSession) -> List[OrderModel]:
                 OrderMenuAssociation.menu_item
             ),
         )
+        .filter_by(**fltr)
         .order_by(OrderModel.id)
     )
     orders = await session.scalars(query)
