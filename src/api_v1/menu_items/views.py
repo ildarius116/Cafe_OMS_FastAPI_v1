@@ -3,7 +3,7 @@ from typing import List
 from dotenv import load_dotenv
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.api_v1.menu_items.crud import (
+from src.core.cruds.menu_items import (
     create_menu_item,
     get_menu_items_list,
     update_menu_item,

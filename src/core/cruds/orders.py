@@ -3,13 +3,12 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
-from src.api_v1.orders.dependencies import get_order_by_id
+from src.core.models import OrderModel, OrderMenuAssociation
 from src.core.schemas.orders import (
     OrderUpdateSchema,
     OrderUpdatePartialSchema,
     OrderCreateSchema,
 )
-from src.core.models import OrderModel, OrderMenuAssociation
 
 
 async def create_order(
@@ -33,8 +32,7 @@ async def get_order_one(
     session: AsyncSession,
     pk: int,
 ) -> OrderModel | None:
-    result = await get_order_by_id(session=session, pk=pk)
-    return result
+    return await session.get(OrderModel, pk)
 
 
 async def get_order_list(session: AsyncSession, fltr=None) -> List[OrderModel]:

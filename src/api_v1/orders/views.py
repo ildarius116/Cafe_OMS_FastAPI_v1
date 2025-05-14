@@ -3,7 +3,7 @@ from typing import List
 from dotenv import load_dotenv
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.api_v1.orders.crud import (
+from src.core.cruds.orders import (
     create_order,
     get_order_list,
     update_order,

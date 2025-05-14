@@ -2,7 +2,7 @@ from typing import Annotated
 from fastapi import Path, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.api_v1.menu_items.crud import get_menu_items_one
+from src.core.cruds.menu_items import get_menu_items_one
 from src.core.models import db_helper, MenuItemModel
 
 
@@ -13,11 +13,7 @@ async def get_menu_item_by_id(
     """
     Функция получения элемента меню по id..
     """
-    print(f"get_menu_item_by_id pk: {pk}")
-    print(f"get_menu_item_by_id session: {session}")
     result = await get_menu_items_one(session=session, pk=pk)
-    print(f"get_menu_item_by_id result: {result}")
-
     if result:
         return result
     raise HTTPException(

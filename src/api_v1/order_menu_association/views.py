@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.api_v1.order_menu_association.dependencies import get_association_by_id
-from src.api_v1.order_menu_association.crud import (
+from src.core.cruds.order_menu_association import (
     add_menu_item_into_order,
     del_menu_item_from_order,
     get_associations_list,

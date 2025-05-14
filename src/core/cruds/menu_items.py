@@ -1,14 +1,14 @@
 from typing import List
-
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.engine import Result
+
+from src.core.models import MenuItemModel
 from src.core.schemas.menu_items import (
     MenuItemCreateSchema,
     MenuItemUpdateSchema,
     MenuItemUpdatePartialSchema,
 )
-from src.core.models import MenuItemModel
 
 
 async def create_menu_item(
@@ -22,7 +22,6 @@ async def create_menu_item(
 
 
 async def get_menu_items_one(session: AsyncSession, pk: int) -> MenuItemModel | None:
-    print(f"get_menu_item_by_id result: {session}")
     return await session.get(MenuItemModel, pk)
 
 

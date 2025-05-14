@@ -1,10 +1,9 @@
-from fastapi import APIRouter, HTTPException, Path, Depends
-from typing import Dict, Any, List, Annotated
+from fastapi import APIRouter, Path, Depends
+from typing import Dict, Any, Annotated
 from dotenv import load_dotenv
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.api_v1.menu_items.crud import get_menu_items_list
-from src.core.config import settings
+from src.core.cruds.menu_items import get_menu_items_list
 from src.core.models import db_helper
 
 load_dotenv()
