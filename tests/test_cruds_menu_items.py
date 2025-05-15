@@ -4,7 +4,6 @@ from typing import List
 
 from src.core.cruds.menu_items import (
     create_menu_item,
-    get_menu_items_one,
     get_menu_items_list,
     update_menu_item,
     delete_menu_item,

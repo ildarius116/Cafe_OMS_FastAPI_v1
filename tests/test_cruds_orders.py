@@ -1,9 +1,6 @@
 import pytest
-from unittest.mock import patch
-from fastapi.testclient import TestClient
-from sqlalchemy import select, delete
 from sqlalchemy.ext.asyncio import AsyncSession
-from typing import Any, Dict, List
+from typing import List
 
 from src.core.cruds.orders import (
     create_order,
@@ -14,10 +11,8 @@ from src.core.cruds.orders import (
 from src.core.models import OrderModel
 from src.core.schemas.orders import (
     OrderCreateSchema,
-    OrderUpdateSchema,
     OrderUpdatePartialSchema,
 )
-from src.main import app
 
 
 @pytest.mark.asyncio
