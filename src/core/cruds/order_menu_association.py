@@ -1,10 +1,9 @@
-from typing import List, Any
-from sqlalchemy import select, func
+from typing import List
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.core.cruds.orders import update_order, get_order_one
+from src.core.cruds.orders import get_order_one
 from src.core.models import OrderModel, OrderMenuAssociation, MenuItemModel
-from src.core.schemas.orders import OrderUpdatePartialSchema
 
 
 async def get_associations_list(session: AsyncSession) -> List[OrderMenuAssociation]:
@@ -35,7 +34,7 @@ async def add_menu_item_into_order(
 async def del_menu_item_from_order(
     session: AsyncSession,
     association: OrderMenuAssociation,
-) -> Any:
+) -> int:
     order_id = association.order_id
     item_price = association.price
     await session.delete(association)
