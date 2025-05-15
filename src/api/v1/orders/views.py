@@ -76,6 +76,7 @@ async def order_one(
     path="/{pk}/",
     response_model=OrderSchema,
     summary="Полное обновление заказа",
+    status_code=201,
 )
 async def order_update_full(
     order_update: OrderUpdateSchema,
@@ -101,6 +102,7 @@ async def order_update_full(
     path="/{pk}/",
     response_model=OrderSchema,
     summary="Частичное обновление заказа",
+    status_code=201,
 )
 async def order_update_partial(
     order_update: OrderUpdatePartialSchema,

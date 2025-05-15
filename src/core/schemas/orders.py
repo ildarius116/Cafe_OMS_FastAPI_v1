@@ -26,8 +26,11 @@ class OrderCreateSchema(BaseModel):
     status: str = Field(default="pending")
 
 
-class OrderUpdateSchema(OrderBaseSchema):
-    pass
+class OrderUpdateSchema(BaseModel):
+    table_number: int
+    status: str
+    menu_items_details: List["OrderMenuAssociationSchema"]
+    total_price: float
 
 
 class OrderFilterSchema(BaseModel):
