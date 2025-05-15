@@ -5,9 +5,13 @@ from sqlalchemy import select, delete
 from sqlalchemy.ext.asyncio import AsyncSession
 from typing import Any, Dict, List
 
-from src.core.cruds.orders import create_order, get_order_list
+from src.core.cruds.orders import create_order, get_order_list, update_order
 from src.core.models import OrderModel
-from src.core.schemas.orders import OrderCreateSchema
+from src.core.schemas.orders import (
+    OrderCreateSchema,
+    OrderUpdateSchema,
+    OrderUpdatePartialSchema,
+)
 from src.main import app
 
 
@@ -15,19 +19,21 @@ from src.main import app
 async def test_create_order(
     test_db_session: AsyncSession,
     clean_db,
+    test_orders: List[OrderCreateSchema],
 ):
     """Тест создания заказа"""
 
-    test_data = OrderCreateSchema(table_number=1, status="ready")
-    result: OrderModel = await create_order(test_db_session, test_data)
+    order: OrderModel = await create_order(
+        session=test_db_session, order_in=test_orders[1]
+    )
 
     # проверка
-    assert result.id == 1
-    assert result.table_number == 1
-    assert result.status == "ready"
-    assert result.total_price == 0
-    assert result.created_at is not None
-    assert result.updated_at is not None
+    assert order.id == 1
+    assert order.table_number == 2
+    assert order.status == "ready"
+    assert order.total_price == 0
+    assert order.created_at is not None
+    assert order.updated_at is not None
 
 
 @pytest.mark.asyncio
@@ -49,8 +55,40 @@ async def test_get_order_list(
     """Тест вывода списка заказов с применением фильтрации"""
 
     for test_order in test_orders:
-        await create_order(test_db_session, test_order)
+        await create_order(session=test_db_session, order_in=test_order)
     orders_list = await get_order_list(test_db_session, fltr)
 
     # проверка
     assert len(orders_list) == qty
+
+
+@pytest.mark.asyncio
+async def test_update_order(
+    test_db_session: AsyncSession,
+    clean_db,
+    test_orders: List[OrderCreateSchema],
+):
+    """Тест обновления заказа"""
+
+    order: OrderModel = await create_order(
+        session=test_db_session, order_in=test_orders[1]
+    )
+    # проверка текущего состояния
+    assert order.id == 1
+    assert order.table_number == 2
+    assert order.status == "ready"
+
+    order_update_data: OrderUpdatePartialSchema = OrderUpdatePartialSchema(
+        status="paid"
+    )
+    order: OrderModel = await update_order(
+        session=test_db_session,
+        order=order,
+        order_update=order_update_data,
+        partial=True,
+    )
+
+    # проверка после внесения изменений
+    assert order.id == 1
+    assert order.table_number == 2
+    assert order.status == "paid"
