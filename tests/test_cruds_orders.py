@@ -5,7 +5,12 @@ from sqlalchemy import select, delete
 from sqlalchemy.ext.asyncio import AsyncSession
 from typing import Any, Dict, List
 
-from src.core.cruds.orders import create_order, get_order_list, update_order
+from src.core.cruds.orders import (
+    create_order,
+    get_order_list,
+    update_order,
+    delete_order,
+)
 from src.core.models import OrderModel
 from src.core.schemas.orders import (
     OrderCreateSchema,
@@ -92,3 +97,25 @@ async def test_update_order(
     assert order.id == 1
     assert order.table_number == 2
     assert order.status == "paid"
+
+
+@pytest.mark.asyncio
+async def test_delete_order(
+    test_db_session: AsyncSession,
+    clean_db,
+    test_orders: List[OrderCreateSchema],
+):
+    """Тест удаления заказа"""
+
+    for test_order in test_orders:
+        await create_order(session=test_db_session, order_in=test_order)
+    orders_list = await get_order_list(test_db_session)
+
+    # проверка списка до удаления заказа
+    assert len(orders_list) == 4
+
+    await delete_order(session=test_db_session, order=orders_list[0])
+    orders_list = await get_order_list(test_db_session)
+
+    # проверка списка после удаления заказа
+    assert len(orders_list) == 3
