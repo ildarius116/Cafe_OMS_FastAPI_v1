@@ -8,7 +8,10 @@ from src.core.cruds.order_menu_association import (
     del_menu_item_from_order,
     get_associations_list,
 )
-from src.core.schemas.order_menu_association import OrderMenuAssociationSchema
+from src.core.schemas.order_menu_association import (
+    OrderMenuAssociationSchema,
+    OrderMenuAssociationAddSchema,
+)
 from src.core.schemas.orders import OrderSchema
 from src.core.models import db_helper, OrderModel, OrderMenuAssociation
 from src.core.dependencies import (
@@ -38,11 +41,11 @@ async def get_list(
     path="/{pk}/",
     response_model=OrderSchema,
     summary="Добавить элемент Меню в заказ",
+    status_code=status.HTTP_201_CREATED,
 )
 async def add_into_order(
     order: OrderModel = Depends(get_order_by_id),
-    menu_item_id: int = None,
-    quantity: int = 1,
+    menu_item_in: OrderMenuAssociationAddSchema = None,
     session: AsyncSession = Depends(db_helper.session_dependency),
 ):
     """
@@ -50,12 +53,12 @@ async def add_into_order(
     menu_item_id - id элемента Меню.\n
     quantity - количество элементов Меню в заказе.\n
     """
-    menu_item = await get_menu_item_by_id(session=session, pk=menu_item_id)
+    menu_item = await get_menu_item_by_id(session=session, pk=menu_item_in.menu_item_id)
     result = await add_menu_item_into_order(
         session=session,
         order=order,
         menu_item=menu_item,
-        quantity=quantity,
+        quantity=menu_item_in.quantity,
     )
     return result
 

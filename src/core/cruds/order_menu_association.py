@@ -28,6 +28,7 @@ async def add_menu_item_into_order(
     )
     order.total_price += price
     await session.commit()
+    await session.refresh(order)
     return await session.get(OrderModel, order.id)
 
 

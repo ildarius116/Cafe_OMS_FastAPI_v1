@@ -13,3 +13,11 @@ class OrderMenuAssociationBaseSchema(BaseModel):
 
 class OrderMenuAssociationSchema(OrderMenuAssociationBaseSchema):
     id: int
+
+
+class OrderMenuAssociationAddSchema(BaseModel):
+
+    model_config = ConfigDict(from_attributes=True)
+
+    menu_item_id: int
+    quantity: int
