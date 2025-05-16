@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import List
 import pytest_asyncio
 from httpx import AsyncClient, ASGITransport
 from sqlalchemy import NullPool
@@ -20,10 +20,7 @@ from src.core.models import (
     OrderMenuAssociation,
 )
 from src.core.schemas.menu_items import MenuItemCreateSchema
-from src.core.schemas.order_menu_association import (
-    OrderMenuAssociationBaseSchema,
-    OrderMenuAssociationAddSchema,
-)
+from src.core.schemas.order_menu_association import OrderMenuAssociationAddSchema
 from src.core.schemas.orders import OrderCreateSchema
 from src.main import app
 
@@ -55,11 +52,8 @@ async_session = async_sessionmaker(
 
 
 @pytest_asyncio.fixture(scope="function", autouse=True)
-async def test_db():
-    """
-    Функция-фикстура инициализации и очистка тестовой БД
-    """
-
+async def test_db_init():
+    """Фикстура инициализации и очистка тестовой БД"""
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
     yield engine
@@ -68,10 +62,8 @@ async def test_db():
 
 
 @pytest_asyncio.fixture
-async def test_db_session(test_db) -> AsyncSession:
-    """
-    Функция-фикстура асинхронной сессии
-    """
+async def test_db_session(test_db_init) -> AsyncSession:
+    """Фикстура асинхронной сессии"""
     async with async_session() as session:
         try:
             yield session
@@ -82,9 +74,7 @@ async def test_db_session(test_db) -> AsyncSession:
 
 @pytest_asyncio.fixture
 async def clean_db(test_db_session: AsyncSession):
-    """
-    Функция-фикстура очистки БД перед тестом
-    """
+    """Фикстура очистки БД перед тестом"""
     for table in reversed(Base.metadata.sorted_tables):
         await test_db_session.execute(table.delete())
     await test_db_session.commit()
@@ -93,6 +83,8 @@ async def clean_db(test_db_session: AsyncSession):
 
 @pytest_asyncio.fixture
 async def test_app():
+    """Фикстура подмены приложения под тесты"""
+
     app.dependency_overrides[db_helper.session_dependency] = (
         test_db_helper.session_dependency
     )
@@ -102,6 +94,7 @@ async def test_app():
 
 @pytest_asyncio.fixture
 async def async_client(test_app) -> AsyncClient:
+    """Фикстура тестового клиента"""
     async with AsyncClient(
         transport=ASGITransport(test_app),
         base_url="http://test",
@@ -111,9 +104,7 @@ async def async_client(test_app) -> AsyncClient:
 
 @pytest_asyncio.fixture
 async def test_orders_data():
-    """
-    Функция-фикстура
-    """
+    """Фикстура списка данных для создания заказов"""
     data_list: List[OrderCreateSchema] = [
         OrderCreateSchema(
             table_number=1,
@@ -132,15 +123,12 @@ async def test_orders_data():
             status="paid",
         ),
     ]
-
     return data_list
 
 
 @pytest_asyncio.fixture
 async def test_menu_items_data():
-    """
-    Функция-фикстура
-    """
+    """Фикстура списка данных для создания элементов Меню"""
     data_list: List[MenuItemCreateSchema] = [
         MenuItemCreateSchema(
             name="Чай",
@@ -179,15 +167,12 @@ async def test_menu_items_data():
             price=55,
         ),
     ]
-
     return data_list
 
 
 @pytest_asyncio.fixture
 async def test_association_data():
-    """
-    Функция-фикстура
-    """
+    """Фикстура списка данных для m2m связей между таблицами"""
     data_list: List[OrderMenuAssociationAddSchema] = [
         OrderMenuAssociationAddSchema(
             menu_item_id=1,
@@ -206,7 +191,6 @@ async def test_association_data():
             quantity=2,
         ),
     ]
-
     return data_list
 
 
