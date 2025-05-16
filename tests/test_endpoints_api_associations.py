@@ -14,6 +14,7 @@ async def test_associations_get_list(
 @pytest.mark.asyncio
 async def test_association_add_into_order(
     async_client: AsyncClient,
+    clean_db,
 ):
     """Тест API - добавление элемента Меню в заказ"""
 

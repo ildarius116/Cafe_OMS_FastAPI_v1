@@ -6,6 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 @pytest.mark.asyncio
 async def test_create_order(
     async_client: AsyncClient,
+    clean_db,
 ):
     """Тест API - создание заказа"""
     response = await async_client.post(
@@ -28,9 +29,12 @@ async def test_create_order(
 @pytest.mark.asyncio
 async def test_get_order_list(
     async_client: AsyncClient,
+    clean_db,
+    pre_created_orders,
 ):
     """Тест API - получение списка заказов"""
     response = await async_client.get("/api/v1/orders/")
+    print(f"\n\n\ntest_get_order_list response: {response.json()}\n\n\n")
     assert response.status_code == 200
 
 
@@ -39,8 +43,8 @@ async def test_get_order_list(
     "pk, st_code",
     [
         (1, 200),
-        (2, 404),
-        (5, 404),
+        (2, 200),
+        (100, 404),
     ],
 )
 async def test_get_order_one(
@@ -85,6 +89,8 @@ async def test_order_update_partial(
     test_db_session: AsyncSession,
     pk,
     upd_data,
+    clean_db,
+    pre_created_orders,
 ):
     """Тест API - частичное обновление заказа"""
     response = await async_client.patch(
@@ -107,6 +113,7 @@ async def test_order_update_full(
     async_client: AsyncClient,
     test_db_session: AsyncSession,
     clean_db,
+    pre_created_orders,
 ):
     """Тест API - полное обновление заказа"""
     response = await async_client.put(
