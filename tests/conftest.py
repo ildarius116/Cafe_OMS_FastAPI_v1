@@ -1,7 +1,5 @@
 from typing import List
-
 import pytest_asyncio
-from fastapi import FastAPI
 from httpx import AsyncClient, ASGITransport
 from sqlalchemy import delete, NullPool
 from sqlalchemy.ext.asyncio import (
@@ -33,7 +31,11 @@ async_session = async_sessionmaker(
 )
 
 
-@pytest_asyncio.fixture(scope="session")
+def pytest_configure(config):
+    config.option.asyncio_default_fixture_loop_scope = "function"
+
+
+@pytest_asyncio.fixture(scope="function")
 async def test_db():
     """
     Функция-фикстура инициализации и очистка тестовой БД
@@ -60,7 +62,7 @@ async def test_db_session(test_db) -> AsyncSession:
         await session.close()
 
 
-@pytest_asyncio.fixture(scope="session")
+@pytest_asyncio.fixture(scope="function")
 async def async_client() -> AsyncClient:
     return AsyncClient(
         transport=ASGITransport(app),
