@@ -44,9 +44,6 @@ async def test_get_menu_items_list(
     for test_menu_item in test_menu_items_data:
         await create_menu_item(session=test_db_session, menu_item_in=test_menu_item)
     menu_item_list = await get_menu_items_list(test_db_session)
-    print("\n\n")
-    for menu_item in menu_item_list:
-        print(f"   test_get_menu_items_list menu_item: {menu_item}")
 
     # проверка
     assert len(menu_item_list) == 9

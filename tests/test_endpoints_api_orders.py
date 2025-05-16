@@ -34,7 +34,6 @@ async def test_get_order_list(
 ):
     """Тест API - получение списка заказов"""
     response = await async_client.get("/api/v1/orders/")
-    print(f"\n\n\ntest_get_order_list response: {response.json()}\n\n\n")
     assert response.status_code == 200
 
 
@@ -51,6 +50,8 @@ async def test_get_order_one(
     async_client: AsyncClient,
     pk,
     st_code,
+    clean_db,
+    pre_created_orders,
 ):
     """Тест API - получение одного конкретного заказа"""
     response = await async_client.get(f"/api/v1/orders/{pk}/")
@@ -136,6 +137,8 @@ async def test_order_update_full(
 @pytest.mark.asyncio
 async def test_delete_order(
     async_client: AsyncClient,
+    clean_db,
+    pre_created_orders,
 ):
     """Тест API - удаление заказа"""
     response = await async_client.delete("/api/v1/orders/1/")

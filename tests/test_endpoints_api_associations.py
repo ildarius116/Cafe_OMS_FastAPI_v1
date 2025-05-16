@@ -15,26 +15,10 @@ async def test_associations_get_list(
 async def test_association_add_into_order(
     async_client: AsyncClient,
     clean_db,
+    pre_created_orders,
+    pre_created_menu_items,
 ):
     """Тест API - добавление элемента Меню в заказ"""
-
-    response = await async_client.post(
-        url="/api/v1/orders/",
-        json={
-            "table_number": 1,
-            "status": "pending",
-        },
-    )
-    assert response.status_code == 201
-
-    response = await async_client.post(
-        url="/api/v1/menu_items/",
-        json={
-            "name": "Шурпа",
-            "price": 111,
-        },
-    )
-    assert response.status_code == 201
 
     response = await async_client.post(
         url=f"/api/v1/association/1/",
@@ -54,10 +38,9 @@ async def test_association_add_into_order(
 @pytest.mark.asyncio
 async def test_association_delete_from_order(
     async_client: AsyncClient,
+    clean_db,
+    pre_created_associations,
 ):
     """Тест API - удаление элемента Меню из заказа"""
     response = await async_client.delete("/api/v1/association/1/")
-    await async_client.delete("/api/v1/orders/1/")
-    await async_client.delete("/api/v1/menu_items/1/")
-
     assert response.status_code == 204
