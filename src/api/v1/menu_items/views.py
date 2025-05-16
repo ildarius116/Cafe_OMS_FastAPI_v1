@@ -74,6 +74,7 @@ async def menu_item_one(
     path="/{pk}/",
     response_model=MenuItemSchema,
     summary="Полное обновление элемента Меню",
+    status_code=status.HTTP_201_CREATED,
 )
 async def menu_item_update_full(
     item_update: MenuItemUpdateSchema,
@@ -96,6 +97,7 @@ async def menu_item_update_full(
     path="/{pk}/",
     response_model=MenuItemSchema,
     summary="Частичное обновление элемента Меню",
+    status_code=status.HTTP_201_CREATED,
 )
 async def menu_item_update_partial(
     item_update: MenuItemUpdatePartialSchema,

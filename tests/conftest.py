@@ -81,7 +81,7 @@ async def clean_db(test_db_session: AsyncSession):
 
 
 @pytest_asyncio.fixture
-async def test_orders():
+async def test_orders_data():
     """
     Функция-фикстура
     """
@@ -108,7 +108,7 @@ async def test_orders():
 
 
 @pytest_asyncio.fixture
-async def test_menu_items():
+async def test_menu_items_data():
     """
     Функция-фикстура
     """
@@ -154,14 +154,14 @@ async def test_menu_items():
     return data_list
 
 
-@pytest_asyncio.fixture
-async def created_orders(
-    test_db_session: AsyncSession,
-    test_orders: List[OrderCreateSchema],
-) -> None:
-    for test_order in test_orders:
-        order: OrderModel = OrderModel(**test_order.model_dump())
-        test_db_session.add(order)
-    await test_db_session.commit()
-    # await test_db_session.refresh(order)
-    # return order
+# @pytest_asyncio.fixture
+# async def created_orders(
+#     test_db_session: AsyncSession,
+#     test_orders_data,
+# ) -> None:
+#     for test_order in test_orders_data:
+#         order: OrderModel = OrderModel(**test_order.model_dump())
+#         test_db_session.add(order)
+#     await test_db_session.commit()
+#     # await test_db_session.refresh(order)
+#     # return order
