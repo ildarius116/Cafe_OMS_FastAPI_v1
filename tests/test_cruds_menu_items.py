@@ -17,14 +17,14 @@ from src.core.schemas.menu_items import (
 
 @pytest.mark.asyncio
 async def test_create_menu_item(
-    test_db_session: AsyncSession,
     clean_db,
-    test_menu_items: List[MenuItemCreateSchema],
+    test_db_session: AsyncSession,
+    test_menu_items_data: List[MenuItemCreateSchema],
 ):
     """Тест создания элемента Меню"""
 
     menu_item: MenuItemModel = await create_menu_item(
-        session=test_db_session, menu_item_in=test_menu_items[1]
+        session=test_db_session, menu_item_in=test_menu_items_data[1]
     )
 
     # проверка
@@ -35,15 +35,18 @@ async def test_create_menu_item(
 
 @pytest.mark.asyncio
 async def test_get_menu_items_list(
-    test_db_session: AsyncSession,
     clean_db,
-    test_menu_items: List[MenuItemCreateSchema],
+    test_db_session: AsyncSession,
+    test_menu_items_data: List[MenuItemCreateSchema],
 ):
     """Тест вывода списка элементов Меню"""
 
-    for test_menu_item in test_menu_items:
+    for test_menu_item in test_menu_items_data:
         await create_menu_item(session=test_db_session, menu_item_in=test_menu_item)
     menu_item_list = await get_menu_items_list(test_db_session)
+    print("\n\n")
+    for menu_item in menu_item_list:
+        print(f"   test_get_menu_items_list menu_item: {menu_item}")
 
     # проверка
     assert len(menu_item_list) == 9
@@ -51,14 +54,14 @@ async def test_get_menu_items_list(
 
 @pytest.mark.asyncio
 async def test_update_menu_item(
-    test_db_session: AsyncSession,
     clean_db,
-    test_menu_items: List[MenuItemCreateSchema],
+    test_db_session: AsyncSession,
+    test_menu_items_data: List[MenuItemCreateSchema],
 ):
     """Тест обновления элемента Меню"""
 
     menu_item: MenuItemModel = await create_menu_item(
-        session=test_db_session, menu_item_in=test_menu_items[1]
+        session=test_db_session, menu_item_in=test_menu_items_data[1]
     )
     # проверка текущего состояния
     assert menu_item.id == 1
@@ -98,13 +101,13 @@ async def test_update_menu_item(
 
 @pytest.mark.asyncio
 async def test_delete_menu_item(
-    test_db_session: AsyncSession,
     clean_db,
-    test_menu_items: List[MenuItemCreateSchema],
+    test_db_session: AsyncSession,
+    test_menu_items_data: List[MenuItemCreateSchema],
 ):
     """Тест удаления элемента Меню"""
 
-    for test_menu_item in test_menu_items:
+    for test_menu_item in test_menu_items_data:
         await create_menu_item(session=test_db_session, menu_item_in=test_menu_item)
     menu_item_list = await get_menu_items_list(test_db_session)
 

@@ -4,34 +4,6 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 
 @pytest.mark.asyncio
-async def test_get_order_list(
-    async_client: AsyncClient,
-):
-    """Тест API - получение списка заказов"""
-    response = await async_client.get("/api/v1/orders/")
-    assert response.status_code == 200
-
-
-@pytest.mark.asyncio
-@pytest.mark.parametrize(
-    "pk, st_code",
-    [
-        (1, 200),
-        (2, 200),
-        (5, 404),
-    ],
-)
-async def test_get_order_one(
-    async_client: AsyncClient,
-    pk,
-    st_code,
-):
-    """Тест API - получение одного конкретного заказа"""
-    response = await async_client.get(f"/api/v1/orders/{pk}/")
-    assert response.status_code == st_code
-
-
-@pytest.mark.asyncio
 async def test_create_order(
     async_client: AsyncClient,
 ):
@@ -54,6 +26,34 @@ async def test_create_order(
 
 
 @pytest.mark.asyncio
+async def test_get_order_list(
+    async_client: AsyncClient,
+):
+    """Тест API - получение списка заказов"""
+    response = await async_client.get("/api/v1/orders/")
+    assert response.status_code == 200
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    "pk, st_code",
+    [
+        (1, 200),
+        (2, 404),
+        (5, 404),
+    ],
+)
+async def test_get_order_one(
+    async_client: AsyncClient,
+    pk,
+    st_code,
+):
+    """Тест API - получение одного конкретного заказа"""
+    response = await async_client.get(f"/api/v1/orders/{pk}/")
+    assert response.status_code == st_code
+
+
+@pytest.mark.asyncio
 @pytest.mark.parametrize(
     "pk, upd_data",
     [
@@ -66,14 +66,14 @@ async def test_create_order(
             },
         ),
         (
-            2,
+            1,
             {
                 "table_number": 10,
                 "total_price": 100,
             },
         ),
         (
-            4,
+            1,
             {
                 "status": "paid",
             },
@@ -110,7 +110,7 @@ async def test_order_update_full(
 ):
     """Тест API - полное обновление заказа"""
     response = await async_client.put(
-        url=f"/api/v1/orders/{2}/",
+        url=f"/api/v1/orders/{1}/",
         json={
             "table_number": 15,
             "status": "ready",
@@ -120,7 +120,7 @@ async def test_order_update_full(
     )
     assert response.status_code == 201
     data: dict = response.json()
-    assert data.get("id") == 2
+    assert data.get("id") == 1
     assert data.get("table_number") == 15
     assert data.get("status") == "ready"
     assert data.get("total_price") == 50
@@ -131,5 +131,5 @@ async def test_delete_order(
     async_client: AsyncClient,
 ):
     """Тест API - удаление заказа"""
-    response = await async_client.delete("/api/v1/orders/4/")
+    response = await async_client.delete("/api/v1/orders/1/")
     assert response.status_code == 204

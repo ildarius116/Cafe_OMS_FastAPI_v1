@@ -46,7 +46,7 @@ async def test_db():
     yield engine
     async with engine.begin() as conn:
         print("BEFORE DROP !!!!!!!!!!!!!!!!!")
-        await conn.run_sync(Base.metadata.drop_all)
+        # await conn.run_sync(Base.metadata.drop_all)
         print("AFTER DROP !!!!!!!!!!!!!!!!!")
 
 
@@ -112,7 +112,7 @@ async def test_menu_items_data():
     """
     Функция-фикстура
     """
-    data_list = [
+    data_list: List[MenuItemCreateSchema] = [
         MenuItemCreateSchema(
             name="Чай",
             price=10,

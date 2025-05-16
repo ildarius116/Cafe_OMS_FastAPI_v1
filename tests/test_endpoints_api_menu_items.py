@@ -4,34 +4,6 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 
 @pytest.mark.asyncio
-async def test_get_menu_items_list(
-    async_client: AsyncClient,
-):
-    """Тест API - получение списка элементов Меню"""
-    response = await async_client.get("/api/v1/menu_items/")
-    assert response.status_code == 200
-
-
-@pytest.mark.asyncio
-@pytest.mark.parametrize(
-    "pk, st_code",
-    [
-        (1, 200),
-        (2, 200),
-        (100, 404),
-    ],
-)
-async def test_get_menu_items_one(
-    async_client: AsyncClient,
-    pk,
-    st_code,
-):
-    """Тест API - получение одного конкретного элемента Меню"""
-    response = await async_client.get(f"/api/v1/menu_items/{pk}/")
-    assert response.status_code == st_code
-
-
-@pytest.mark.asyncio
 async def test_create_menu_items(
     async_client: AsyncClient,
 ):
@@ -51,6 +23,34 @@ async def test_create_menu_items(
 
 
 @pytest.mark.asyncio
+async def test_get_menu_items_list(
+    async_client: AsyncClient,
+):
+    """Тест API - получение списка элементов Меню"""
+    response = await async_client.get("/api/v1/menu_items/")
+    assert response.status_code == 200
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    "pk, st_code",
+    [
+        (1, 200),
+        (2, 404),
+        (100, 404),
+    ],
+)
+async def test_get_menu_items_one(
+    async_client: AsyncClient,
+    pk,
+    st_code,
+):
+    """Тест API - получение одного конкретного элемента Меню"""
+    response = await async_client.get(f"/api/v1/menu_items/{pk}/")
+    assert response.status_code == st_code
+
+
+@pytest.mark.asyncio
 @pytest.mark.parametrize(
     "pk, upd_data",
     [
@@ -62,13 +62,13 @@ async def test_create_menu_items(
             },
         ),
         (
-            2,
+            1,
             {
                 "name": "Компот из урюка",
             },
         ),
         (
-            4,
+            1,
             {
                 "price": 777,
             },
@@ -103,7 +103,7 @@ async def test_menu_items_update_full(
 ):
     """Тест API - полное обновление элемента Меню"""
     response = await async_client.put(
-        url=f"/api/v1/menu_items/{2}/",
+        url=f"/api/v1/menu_items/1/",
         json={
             "name": "Курица по-пекински",
             "price": 5555,
@@ -111,7 +111,7 @@ async def test_menu_items_update_full(
     )
     assert response.status_code == 201
     data: dict = response.json()
-    assert data.get("id") == 2
+    assert data.get("id") == 1
     assert data.get("price") == 5555
     assert data.get("name") == "Курица по-пекински"
 
@@ -121,5 +121,5 @@ async def test_delete_menu_items(
     async_client: AsyncClient,
 ):
     """Тест API - удаление элемента Меню"""
-    response = await async_client.delete("/api/v1/menu_items/15/")
+    response = await async_client.delete("/api/v1/menu_items/1/")
     assert response.status_code == 204

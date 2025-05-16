@@ -17,20 +17,20 @@ from src.core.schemas.orders import OrderCreateSchema
 
 @pytest.mark.asyncio
 async def test_add_menu_item_into_order(
-    test_db_session: AsyncSession,
     clean_db,
-    test_orders: List[OrderCreateSchema],
-    test_menu_items: List[MenuItemCreateSchema],
+    test_db_session: AsyncSession,
+    test_orders_data: List[OrderCreateSchema],
+    test_menu_items_data: List[MenuItemCreateSchema],
 ):
     """Тест добавления элемента меню в заказ"""
 
     order: OrderModel = await create_order(
         session=test_db_session,
-        order_in=test_orders[1],
+        order_in=test_orders_data[1],
     )
     menu_item: MenuItemModel = await create_menu_item(
         session=test_db_session,
-        menu_item_in=test_menu_items[1],
+        menu_item_in=test_menu_items_data[1],
     )
     order: OrderModel = await add_menu_item_into_order(
         session=test_db_session,
@@ -54,18 +54,18 @@ async def test_add_menu_item_into_order(
 
 @pytest.mark.asyncio
 async def test_get_associations_list(
-    test_db_session: AsyncSession,
     clean_db,
-    test_orders: List[OrderCreateSchema],
-    test_menu_items: List[MenuItemCreateSchema],
+    test_db_session: AsyncSession,
+    test_orders_data: List[OrderCreateSchema],
+    test_menu_items_data: List[MenuItemCreateSchema],
 ):
     """Тест получения списка связей m2m "Заказ - элементы Меню" """
 
     order: OrderModel = await create_order(
         session=test_db_session,
-        order_in=test_orders[1],
+        order_in=test_orders_data[1],
     )
-    for test_menu_item in test_menu_items:
+    for test_menu_item in test_menu_items_data:
         menu_item: MenuItemModel = await create_menu_item(
             session=test_db_session,
             menu_item_in=test_menu_item,
@@ -86,19 +86,19 @@ async def test_get_associations_list(
 
 
 @pytest.mark.asyncio
-async def test_del_menu_item_into_order(
-    test_db_session: AsyncSession,
+async def test_del_menu_item_from_order(
     clean_db,
-    test_orders: List[OrderCreateSchema],
-    test_menu_items: List[MenuItemCreateSchema],
+    test_db_session: AsyncSession,
+    test_orders_data: List[OrderCreateSchema],
+    test_menu_items_data: List[MenuItemCreateSchema],
 ):
     """Тест удаления элемента Меню из заказа"""
 
     order: OrderModel = await create_order(
         session=test_db_session,
-        order_in=test_orders[1],
+        order_in=test_orders_data[1],
     )
-    for test_menu_item in test_menu_items:
+    for test_menu_item in test_menu_items_data:
         menu_item: MenuItemModel = await create_menu_item(
             session=test_db_session,
             menu_item_in=test_menu_item,

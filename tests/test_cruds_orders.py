@@ -17,14 +17,14 @@ from src.core.schemas.orders import (
 
 @pytest.mark.asyncio
 async def test_create_order(
-    test_db_session: AsyncSession,
     clean_db,
-    test_orders: List[OrderCreateSchema],
+    test_db_session: AsyncSession,
+    test_orders_data: List[OrderCreateSchema],
 ):
     """Тест создания заказа"""
 
     order: OrderModel = await create_order(
-        session=test_db_session, order_in=test_orders[1]
+        session=test_db_session, order_in=test_orders_data[1]
     )
 
     # проверка
@@ -46,15 +46,15 @@ async def test_create_order(
     ],
 )
 async def test_get_order_list(
-    test_db_session: AsyncSession,
     clean_db,
-    test_orders: List[OrderCreateSchema],
+    test_db_session: AsyncSession,
+    test_orders_data: List[OrderCreateSchema],
     fltr,
     qty,
 ):
     """Тест вывода списка заказов с применением фильтрации"""
 
-    for test_order in test_orders:
+    for test_order in test_orders_data:
         await create_order(session=test_db_session, order_in=test_order)
     orders_list = await get_order_list(test_db_session, fltr)
 
@@ -64,14 +64,14 @@ async def test_get_order_list(
 
 @pytest.mark.asyncio
 async def test_update_order(
-    test_db_session: AsyncSession,
     clean_db,
-    test_orders: List[OrderCreateSchema],
+    test_db_session: AsyncSession,
+    test_orders_data: List[OrderCreateSchema],
 ):
     """Тест обновления заказа"""
 
     order: OrderModel = await create_order(
-        session=test_db_session, order_in=test_orders[1]
+        session=test_db_session, order_in=test_orders_data[1]
     )
     # проверка текущего состояния
     assert order.id == 1
@@ -96,13 +96,13 @@ async def test_update_order(
 
 @pytest.mark.asyncio
 async def test_delete_order(
-    test_db_session: AsyncSession,
     clean_db,
-    test_orders: List[OrderCreateSchema],
+    test_db_session: AsyncSession,
+    test_orders_data: List[OrderCreateSchema],
 ):
     """Тест удаления заказа"""
 
-    for test_order in test_orders:
+    for test_order in test_orders_data:
         await create_order(session=test_db_session, order_in=test_order)
     orders_list = await get_order_list(test_db_session)
 

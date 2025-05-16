@@ -3,6 +3,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.core.cruds.orders import get_order_one
+from src.core.dependencies import get_order_by_id
 from src.core.models import OrderModel, OrderMenuAssociation, MenuItemModel
 
 
@@ -19,6 +20,7 @@ async def add_menu_item_into_order(
     quantity: int,
 ) -> OrderModel | None:
     price = quantity * menu_item.price
+    order_id = order.id
     order.menu_items_details.append(
         OrderMenuAssociation(
             menu_item=menu_item,
@@ -28,8 +30,8 @@ async def add_menu_item_into_order(
     )
     order.total_price += price
     await session.commit()
-    await session.refresh(order)
-    return await session.get(OrderModel, order.id)
+    order = await get_order_by_id(session=session, pk=order_id)
+    return order
 
 
 async def del_menu_item_from_order(
