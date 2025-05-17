@@ -132,38 +132,47 @@ async def test_menu_items_data():
     data_list: List[MenuItemCreateSchema] = [
         MenuItemCreateSchema(
             name="Чай",
+            type="hot drinks",
             price=10,
         ),
         MenuItemCreateSchema(
             name="Кофе",
+            type="hot drinks",
             price=60,
         ),
         MenuItemCreateSchema(
             name="Каша Гречневая",
+            type="drinks",
             price=20,
         ),
         MenuItemCreateSchema(
             name="Каша Ячневая",
+            type="garnishes",
             price=20,
         ),
         MenuItemCreateSchema(
             name="Каша Молочная",
+            type="garnishes",
             price=30,
         ),
         MenuItemCreateSchema(
             name="Яичница (2шт.)",
+            type="second courses",
             price=25,
         ),
         MenuItemCreateSchema(
             name="Сосиски (2шт.)",
+            type="second courses",
             price=35,
         ),
         MenuItemCreateSchema(
             name="Суп Гороховый",
+            type="first courses",
             price=25,
         ),
         MenuItemCreateSchema(
             name="Стейк Говяжий",
+            type="second courses",
             price=55,
         ),
     ]

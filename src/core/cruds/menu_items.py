@@ -25,8 +25,17 @@ async def get_menu_items_one(session: AsyncSession, pk: int) -> MenuItemModel | 
     return await session.get(MenuItemModel, pk)
 
 
-async def get_menu_items_list(session: AsyncSession) -> List[MenuItemModel]:
-    query = select(MenuItemModel).order_by(MenuItemModel.id)
+async def get_menu_items_list(session: AsyncSession, fltr=None) -> List[MenuItemModel]:
+    if not fltr:
+        fltr = {}
+    query = select(MenuItemModel)
+    name = fltr.get("name")
+    if name:
+        query = query.where(MenuItemModel.name.like(f"{name}%"))
+    type = fltr.get("type")
+    if type:
+        query = query.where(MenuItemModel.type == type)
+    query = query.order_by(MenuItemModel.id)
     result: Result = await session.execute(query)
     result = result.scalars().all()
     return list(result)

@@ -1,24 +1,67 @@
-from fastapi import APIRouter, Path, Depends
-from typing import Dict, Any, Annotated
-from dotenv import load_dotenv
+from fastapi import APIRouter, Depends, Request, Form, status
+from fastapi.templating import Jinja2Templates
+from fastapi.responses import RedirectResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.core.cruds.menu_items import get_menu_items_list
-from src.core.models import db_helper
-
-load_dotenv()
+from src.core.config import settings
+from src.core.cruds.menu_items import (
+    get_menu_items_list,
+    create_menu_item,
+    delete_menu_item,
+)
+from src.core.dependencies import get_menu_item_by_id
+from src.core.models import db_helper, MenuItemModel
+from src.core.schemas.menu_items import MenuItemCreateSchema
 
 router = APIRouter()
-
-pk_type = Annotated[int, Path(ge=1, lt=1_000_000)]
+templates = Jinja2Templates(directory="src/web/templates")
 
 
 @router.get(
     path="/",
-    name="menu_item_list",
-    summary="menu_item",
+    name="web/menu_details",
+    summary="menu_details",
 )
-async def menu_item_list(
+async def menu_details(
+    request: Request,
+    session: AsyncSession = Depends(db_helper.session_dependency),
+):
+    """
+    Функция получения списка заказов.
+
+    :возврат: html-страница списка заказов.
+    """
+
+    name = request.query_params.get("name")
+    type = request.query_params.get("type")
+    fltr = {}
+    if name and name != "None":
+        fltr["name"] = name
+    if type:
+        fltr["type"] = type
+
+    menu_items = await get_menu_items_list(session=session, fltr=fltr)
+    return templates.TemplateResponse(
+        name="cafe/menu_detail.html",
+        request=request,
+        context={
+            "current_name": name,
+            "current_type": type,
+            "menu_items": menu_items,
+            "type_labels": settings.MENU_ITEM_TYPES,
+        },
+    )
+
+
+@router.post(
+    path="/",
+    name="web/menu_item_create",
+    summary="menu_item_create",
+)
+async def menu_item_create(
+    name: str = Form(...),
+    type: str = Form(...),
+    price: float = Form(...),
     session: AsyncSession = Depends(db_helper.session_dependency),
 ):
     """
@@ -26,68 +69,26 @@ async def menu_item_list(
 
     :возврат: html-страница списка заказов.
     """
-    return await get_menu_items_list(session=session)
-
-
-@router.get(
-    path="/list/",
-    name="menu_items_list",
-    summary="menu_item_list",
-)
-async def menu_items_list() -> Dict[str, Any]:
-    """
-    Функция создания заказа.
-
-    :возврат: html-страница списка заказов.
-    """
-    message = {"message": "menu_items_list"}
-    return message
-
-
-@router.get(
-    path="/new/",
-    name="menu_item_create",
-    # response_model=MenuItemSchema,
-    summary="menu_item_create",
-)
-async def menu_item_create(item) -> Dict[str, Any]:
-    """
-    Функция создания заказа.
-
-    :возврат: html-страница списка заказов.
-    """
-    message = {"message": "menu_item_create"}
-    return message
+    if name and price and type:
+        menu_item_in = MenuItemCreateSchema(name=name, type=type, price=price)
+        await create_menu_item(session=session, menu_item_in=menu_item_in)
+    return RedirectResponse(url="/menu_items/", status_code=status.HTTP_303_SEE_OTHER)
 
 
 @router.post(
-    path="/new/",
-    name="menu_item_create",
-    # response_model=MenuItemSchema,
-    summary="menu_item_create",
-)
-async def menu_item_create(request) -> Dict[str, Any]:
-    """
-    Функция создания заказа.
-
-    :возврат: html-страница списка заказов.
-    """
-
-    message = {"message": "menu_item_create"}
-    return message
-
-
-@router.get(
     path="/{pk}/delete/",
-    name="menu_item_delete",
+    name="web/menu_item_delete",
     summary="menu_item_delete",
 )
-async def menu_item_delete(pk: pk_type) -> Dict[str, Any]:
+async def menu_item_delete(
+    menu_item: MenuItemModel = Depends(get_menu_item_by_id),
+    session: AsyncSession = Depends(db_helper.session_dependency),
+):
     """
     Функция создания заказа.
 
     :возврат: html-страница списка заказов.
     """
 
-    message = {"message": "menu_item_delete", "pk": pk}
-    return message
+    await delete_menu_item(session=session, menu_item=menu_item)
+    return RedirectResponse(url="/menu_items/", status_code=status.HTTP_303_SEE_OTHER)

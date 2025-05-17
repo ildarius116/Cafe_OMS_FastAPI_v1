@@ -22,5 +22,17 @@ class Settings(BaseSettings):
         "paid": "Оплачено",
     }
 
+    MENU_ITEM_TYPES: dict = {
+        "not assigned": "Не назначено",
+        "first courses": "Первые блюда",
+        "second courses": "Вторые блюда",
+        "garnishes": "Гарниры",
+        "salads": "Салаты",
+        "desserts": "Десерты",
+        "cold drinks": "Холодные напитки",
+        "hot drinks": "Горячие напитки",
+        "others": "Прочее",
+    }
+
 
 settings = Settings()

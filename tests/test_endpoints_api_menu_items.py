@@ -63,6 +63,7 @@ async def test_get_menu_items_one(
             1,
             {
                 "name": "Соус по-сычуаньски",
+                "type": "others",
                 "price": 1111,
             },
         ),
@@ -70,6 +71,7 @@ async def test_get_menu_items_one(
             2,
             {
                 "name": "Компот из урюка",
+                "type": "cold drinks",
             },
         ),
         (
@@ -98,6 +100,8 @@ async def test_menu_items_update_partial(
     assert data.get("id") == pk
     if upd_data.get("name"):
         assert data.get("name") == upd_data.get("name")
+    if upd_data.get("type"):
+        assert data.get("type") == upd_data.get("type")
     if upd_data.get("price"):
         assert data.get("price") == upd_data.get("price")
 
@@ -114,6 +118,7 @@ async def test_menu_items_update_full(
         url=f"/api/v1/menu_items/1/",
         json={
             "name": "Курица по-пекински",
+            "type": "second courses",
             "price": 5555,
         },
     )
@@ -121,6 +126,7 @@ async def test_menu_items_update_full(
     data: dict = response.json()
     assert data.get("id") == 1
     assert data.get("price") == 5555
+    assert data.get("type") == "second courses"
     assert data.get("name") == "Курица по-пекински"
 
 

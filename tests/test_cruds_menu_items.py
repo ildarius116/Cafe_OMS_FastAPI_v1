@@ -30,6 +30,7 @@ async def test_create_menu_item(
     # проверка
     assert menu_item.id == 1
     assert menu_item.name == "Кофе"
+    assert menu_item.type == "hot drinks"
     assert menu_item.price == 60
 
 
@@ -63,6 +64,7 @@ async def test_update_menu_item(
     # проверка текущего состояния
     assert menu_item.id == 1
     assert menu_item.name == "Кофе"
+    assert menu_item.type == "hot drinks"
     assert menu_item.price == 60
 
     order_update_data: MenuItemUpdatePartialSchema = MenuItemUpdatePartialSchema(
@@ -78,6 +80,7 @@ async def test_update_menu_item(
     # проверка после внесения изменений
     assert menu_item.id == 1
     assert menu_item.name == "Кофе"
+    assert menu_item.type == "hot drinks"
     assert menu_item.price == 55
 
     order_update_data: MenuItemUpdatePartialSchema = MenuItemUpdatePartialSchema(
@@ -93,6 +96,7 @@ async def test_update_menu_item(
     # проверка после внесения изменений
     assert menu_item.id == 1
     assert menu_item.name == "Кофе Капучино"
+    assert menu_item.type == "hot drinks"
     assert menu_item.price == 55
 
 
