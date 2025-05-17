@@ -35,19 +35,29 @@ async def test_create_menu_item(
 
 
 @pytest.mark.asyncio
+@pytest.mark.parametrize(
+    "fltr, qty",
+    [
+        (None, 9),
+        ({"name": "Каша"}, 3),
+        ({"type": "hot drinks"}, 2),
+    ],
+)
 async def test_get_menu_items_list(
     clean_db,
     test_db_session: AsyncSession,
     test_menu_items_data: List[MenuItemCreateSchema],
+    fltr,
+    qty,
 ):
     """Тест вывода списка элементов Меню"""
 
     for test_menu_item in test_menu_items_data:
         await create_menu_item(session=test_db_session, menu_item_in=test_menu_item)
-    menu_item_list = await get_menu_items_list(test_db_session)
+    menu_item_list = await get_menu_items_list(test_db_session, fltr=fltr)
 
     # проверка
-    assert len(menu_item_list) == 9
+    assert len(menu_item_list) == qty
 
 
 @pytest.mark.asyncio

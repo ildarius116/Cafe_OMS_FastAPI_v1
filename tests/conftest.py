@@ -142,7 +142,7 @@ async def test_menu_items_data():
         ),
         MenuItemCreateSchema(
             name="Каша Гречневая",
-            type="drinks",
+            type="garnishes",
             price=20,
         ),
         MenuItemCreateSchema(
