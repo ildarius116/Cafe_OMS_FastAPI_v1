@@ -7,6 +7,16 @@ DB_PATH = BASE_DIR / "cafe.db"
 DB_TEST_PATH = BASE_DIR / "test_cafe.db"
 
 
+class ApiV1Prefix(BaseModel):
+    prefix: str = "/v1"
+    auth: str = "/auth"
+
+
+class ApiPrefix(BaseModel):
+    prefix: str = "/api"
+    v1: ApiV1Prefix = ApiV1Prefix()
+
+
 class DatabaseConfig(BaseModel):
     db_url: str = f"sqlite+aiosqlite:///{DB_PATH}"
     db_test_url: str = f"sqlite+aiosqlite:///{DB_TEST_PATH}"
@@ -45,6 +55,7 @@ class Settings(BaseSettings):
     api_v1_prefix: str = "/api/v1"
     web_prefix: str = ""
 
+    api: ApiPrefix = ApiPrefix()
     db: DatabaseConfig
     access_token: AccessToken
 
