@@ -1,4 +1,5 @@
 __all__ = (
+    "AccessToken",
     "Base",
     "DatabaseHelper",
     "db_helper",
@@ -8,6 +9,7 @@ __all__ = (
     "User",
 )
 
+from .access_token import AccessToken
 from .base import Base
 from .db_helper import DatabaseHelper, db_helper
 from .menu_items import MenuItemModel
