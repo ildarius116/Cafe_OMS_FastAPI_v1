@@ -5,7 +5,7 @@ __all__ = (
     "MenuItemModel",
     "OrderModel",
     "OrderMenuAssociation",
-    "UserModel",
+    "User",
 )
 
 from .base import Base
@@ -13,4 +13,4 @@ from .db_helper import DatabaseHelper, db_helper
 from .menu_items import MenuItemModel
 from .orders import OrderModel
 from .order_menu_association import OrderMenuAssociation
-from .users import UserModel
+from .users import User
