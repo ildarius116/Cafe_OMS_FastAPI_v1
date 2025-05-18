@@ -1,11 +1,14 @@
-from typing import Annotated
-from fastapi import Path
 from pathlib import Path
+from pydantic import BaseModel
 from pydantic_settings import BaseSettings
 
 BASE_DIR = Path(__file__).parent.parent
 DB_PATH = BASE_DIR / "cafe.db"
 DB_TEST_PATH = BASE_DIR / "test_cafe.db"
+
+
+class AccessToken(BaseModel):
+    lifetime_seconds: int = 3600
 
 
 class Settings(BaseSettings):
@@ -15,6 +18,7 @@ class Settings(BaseSettings):
     db_url: str = f"sqlite+aiosqlite:///{DB_PATH}"
     db_test_url: str = f"sqlite+aiosqlite:///{DB_TEST_PATH}"
     debug: bool = True
+    access_token: AccessToken = AccessToken()
 
     ORDER_STATUSES: dict = {
         "pending": "В ожидании",
