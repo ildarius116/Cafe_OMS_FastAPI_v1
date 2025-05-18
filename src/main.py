@@ -1,4 +1,6 @@
 import logging
+
+import uvicorn
 from fastapi import FastAPI
 from contextlib import asynccontextmanager
 from typing import AsyncGenerator, Any
@@ -25,5 +27,13 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, Any]:
 
 
 app = FastAPI(lifespan=lifespan)
-app.include_router(router_api_v1, prefix=settings.api_v1_prefix)
+app.include_router(router_api_v1, prefix=settings.api.v1.prefix)
 app.include_router(router_web, prefix=settings.web_prefix)
+
+if __name__ == "__main__":
+    uvicorn.run(
+        app="main:app",
+        host=settings.run.host,
+        port=settings.run.port,
+        reload=False,
+    )

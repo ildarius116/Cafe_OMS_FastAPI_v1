@@ -7,6 +7,11 @@ DB_PATH = BASE_DIR / "cafe.db"
 DB_TEST_PATH = BASE_DIR / "test_cafe.db"
 
 
+class RunConfig(BaseModel):
+    host: str = "0.0.0.0"
+    port: int = 8000
+
+
 class ApiV1Prefix(BaseModel):
     prefix: str = "/v1"
     auth: str = "/auth"
@@ -15,6 +20,13 @@ class ApiV1Prefix(BaseModel):
 class ApiPrefix(BaseModel):
     prefix: str = "/api"
     v1: ApiV1Prefix = ApiV1Prefix()
+
+    @property
+    def bearer_token_url(self) -> str:
+        # "api/v1/auth/login"
+        parts = (self.prefix, self.v1.prefix, self.v1.auth, "login")
+        path = "".join(parts)
+        return path.removeprefix("/")
 
 
 class DatabaseConfig(BaseModel):
@@ -52,9 +64,9 @@ class Settings(BaseSettings):
         env_prefix="APP_CONFIG__",
     )
 
-    api_v1_prefix: str = "/api/v1"
     web_prefix: str = ""
 
+    run: RunConfig = RunConfig()
     api: ApiPrefix = ApiPrefix()
     db: DatabaseConfig
     access_token: AccessToken
