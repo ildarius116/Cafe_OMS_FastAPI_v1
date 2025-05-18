@@ -65,7 +65,6 @@ class Settings(BaseSettings):
     )
 
     web_prefix: str = ""
-
     run: RunConfig = RunConfig()
     api: ApiPrefix = ApiPrefix()
     db: DatabaseConfig

@@ -30,12 +30,12 @@ def pytest_configure(config):
 
 
 test_db_helper = DatabaseHelper(
-    url=settings.db_test_url,
+    url=settings.db.db_test_url,
     echo=settings.debug,
 )
 
 engine: AsyncEngine = create_async_engine(
-    url=settings.db_test_url,
+    url=settings.db.db_test_url,
     poolclass=NullPool,
     echo=False,
     # echo=settings.debug,

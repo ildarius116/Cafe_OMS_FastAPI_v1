@@ -4,12 +4,13 @@ from typing import List, TYPE_CHECKING
 from datetime import datetime
 
 from src.core.models import Base
+from src.core.models.mixin import IdIntPkMixin
 
 if TYPE_CHECKING:
     from src.core.models.order_menu_association import OrderMenuAssociation
 
 
-class OrderModel(Base):
+class OrderModel(Base, IdIntPkMixin):
     __tablename__ = "orders"
 
     __table_args__ = (

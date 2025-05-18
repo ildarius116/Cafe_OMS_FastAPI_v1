@@ -3,12 +3,13 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from typing import Optional, List, TYPE_CHECKING
 
 from src.core.models import Base
+from src.core.models.mixin import IdIntPkMixin
 
 if TYPE_CHECKING:
     from src.core.models.order_menu_association import OrderMenuAssociation
 
 
-class MenuItemModel(Base):
+class MenuItemModel(Base, IdIntPkMixin):
     __tablename__ = "menu_items"
 
     __table_args__ = (

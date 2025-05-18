@@ -1,20 +1,15 @@
-from typing import List, TYPE_CHECKING
-
+from typing import TYPE_CHECKING
 from sqlalchemy import ForeignKey, UniqueConstraint, Numeric
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-
 from src.core.models import Base
-
-# from src.api.orders.schemas import OrderMenuAssociationSchema
+from src.core.models.mixin import IdIntPkMixin
 
 if TYPE_CHECKING:
     from src.core.models import OrderModel, MenuItemModel
 
-    # from src.api.menu_items.schemas import MenuItemSchema
 
-
-class OrderMenuAssociation(Base):
+class OrderMenuAssociation(Base, IdIntPkMixin):
     __tablename__ = "order_menu_association"
     __table_args__ = (
         UniqueConstraint(

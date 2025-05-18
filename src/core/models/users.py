@@ -6,12 +6,13 @@ from fastapi_users_db_sqlalchemy import (
 
 from .base import Base
 from src.core.types.user_id import UserIdType
+from .mixin import IdIntPkMixin
 
 if TYPE_CHECKING:
     from sqlalchemy.ext.asyncio import AsyncSession
 
 
-class User(Base, SQLAlchemyBaseUserTable[UserIdType]):
+class User(Base, IdIntPkMixin, SQLAlchemyBaseUserTable[UserIdType]):
     __tablename__ = "users"
 
     @classmethod
