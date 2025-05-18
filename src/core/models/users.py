@@ -5,12 +5,13 @@ from fastapi_users_db_sqlalchemy import SQLAlchemyUserDatabase
 
 
 from src.core.models import Base
+from src.core.types.user_id import UserIdType
 
 if TYPE_CHECKING:
     from sqlalchemy.ext.asyncio import AsyncSession
 
 
-class UserModel(Base, SQLAlchemyBaseUserTable[int]):
+class UserModel(Base, SQLAlchemyBaseUserTable[UserIdType]):
     __tablename__ = "users"
 
     @classmethod
