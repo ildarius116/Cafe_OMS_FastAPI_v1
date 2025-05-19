@@ -18,8 +18,8 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, Any]:
     Функция асинхронного контекстного менеджера с инициализацией БД при старте
     """
     try:
-        async with db_helper.engine.begin() as conn:
-            await conn.run_sync(Base.metadata.create_all)
+        # async with db_helper.engine.begin() as conn:
+        #     await conn.run_sync(Base.metadata.create_all)
         yield
     except Exception as e:
         logging.error(f"Failed to initialize DB: {e}")
