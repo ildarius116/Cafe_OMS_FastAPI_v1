@@ -2,8 +2,8 @@ from fastapi import APIRouter, Depends
 from fastapi.security import HTTPBearer
 
 from src.api.v1 import router as router_api_v1
-from src.api.v1.auth import router as router_auth
-from src.api.v1.users import router as router_users
+from src.api.v1.auth.routers import router as router_auth
+from src.api.v1.users.routers import router as router_users
 from src.core.config import settings
 
 http_bearer = HTTPBearer(auto_error=False)
