@@ -35,5 +35,5 @@ if __name__ == "__main__":
         app="main:app",
         host=settings.run.host,
         port=settings.run.port,
-        reload=False,
+        reload=True,
     )
