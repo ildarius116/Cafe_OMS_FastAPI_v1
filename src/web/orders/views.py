@@ -34,10 +34,10 @@ pk_type = Annotated[int, Path(ge=1, lt=1_000_000)]
 
 @router.get(
     path="/",
-    name="index",
+    name="web/orders",
     summary="Вывести список заказов",
 )
-async def index(
+async def orders_list(
     request: Request,
     session: AsyncSession = Depends(db_helper.session_dependency),
 ):
@@ -56,7 +56,7 @@ async def index(
         fltr["status"] = status
     orders = await get_order_list(session=session, fltr=fltr)
     return templates.TemplateResponse(
-        name="cafe/index.html",
+        name="cafe/order_list.html",
         request=request,
         context={
             "orders": orders,

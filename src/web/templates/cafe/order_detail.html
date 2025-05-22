@@ -60,7 +60,7 @@
         <div class="d-flex justify-content-between">
             <div>
                 <a href="{{ url_for('web/order_update', pk=order.id) }}" class="btn btn-outline-primary">Изменить статус</a>
-                <a href="{{ url_for('index') }}" class="btn btn-outline-secondary">Назад к списку</a>
+                <a href="{{ url_for('web/orders') }}" class="btn btn-outline-secondary">Назад к списку</a>
             </div>
             <form method="post" action="{{ url_for('web/order_delete', pk=order.id) }}">
                 {{ csrf_token }}

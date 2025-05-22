@@ -30,6 +30,10 @@ class ApiPrefix(BaseModel):
         return path.removeprefix("/")
 
 
+class WebPrefix(BaseModel):
+    prefix: str = ""
+
+
 class DatabaseConfig(BaseModel):
     db_url: str = f"sqlite+aiosqlite:///{DB_PATH}"
     db_test_url: str = f"sqlite+aiosqlite:///{DB_TEST_PATH}"
@@ -65,9 +69,9 @@ class Settings(BaseSettings):
         env_prefix="APP_CONFIG__",
     )
 
-    web_prefix: str = ""
     run: RunConfig = RunConfig()
     api: ApiPrefix = ApiPrefix()
+    web: WebPrefix = WebPrefix()
     db: DatabaseConfig
     access_token: AccessToken
 
