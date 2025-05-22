@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+
+{% block title %}Профиль пользователя #{{ user.id }}{% endblock %}
+
+{% block content %}
+<div class="card mb-4">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h2>Пользователь #{{ user.id }}</h2>
+    </div>
+    <div class="card-body">
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <h4>Данные:</h4>
+                <ul class="list-group mb-3">
+                    <li class="list-group-item">
+                        <strong>Email:</strong> {{ user.email }}
+                    </li>
+                    <li class="list-group-item">
+                        <strong>Активен:</strong> {% if user.is_active %}Да{% else %}Нет{% endif %}
+                    </li>
+                    <li class="list-group-item">
+                        <strong>Суперпользователь:</strong> {% if user.is_superuser %}Да{% else %}Нет{% endif %}
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="d-flex justify-content-between">
+            <div>
+                <a href="{{ url_for('web/user_update', pk=user.id) }}"
+                   class="btn btn-outline-primary">
+                   Редактировать
+                </a>
+                <a href="{{ url_for('web/users') }}"
+                   class="btn btn-outline-primary">
+                   Назад, к списку пользователей
+                </a>
+            </div>
+            <form method="post" action="{{ url_for('web/user_delete', pk=user.id) }}">
+                <input type="hidden" name="_method" value="DELETE">
+                <button type="submit" class="btn btn-danger">Удалить</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

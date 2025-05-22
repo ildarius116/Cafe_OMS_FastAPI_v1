@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+
+{% block title %}Список пользователей{% endblock %}
+
+{% block content %}
+<div class="card mb-4">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h2>Список пользователей</h2>
+        <a href="{{ url_for('web/user_create') }}" class="btn btn-success">
+            Создать нового
+        </a>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Email</th>
+                        <th>Активен</th>
+                        <th>Суперпользователь</th>
+                        <th>Действия</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in users %}
+                    <tr>
+                        <td>{{ user.id }}</td>
+                        <td>{{ user.email }}</td>
+                        <td>{% if user.is_active %}Да{% else %}Нет{% endif %}</td>
+                        <td>{% if user.is_superuser %}Да{% else %}Нет{% endif %}</td>
+                        <td>
+                            <div class="btn-group" role="group">
+                                <a href="{{ url_for('web/user_detail', pk=user.id) }}"
+                                   class="btn btn-sm btn-outline-primary">
+                                   Просмотр
+                                </a>
+                                <a href="{{ url_for('web/user_update', pk=user.id) }}"
+                                   class="btn btn-sm btn-outline-secondary">
+                                   Редактировать
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
