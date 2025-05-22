@@ -1,7 +1,7 @@
 import logging
 from typing import Optional, TYPE_CHECKING
 from fastapi_users import BaseUserManager, IntegerIDMixin
-
+from fastapi_users.password import PasswordHelper
 from src.core.models import User
 from src.core.config import settings
 from src.core.types.user_id import UserIdType
@@ -10,11 +10,25 @@ if TYPE_CHECKING:
     from fastapi import Request
 
 log = logging.getLogger(__name__)
+password_helper = PasswordHelper()
 
 
 class UserManager(IntegerIDMixin, BaseUserManager[User, UserIdType]):
     reset_password_token_secret: str = settings.access_token.reset_password_token_secret
     verification_token_secret: str = settings.access_token.verification_token_secret
+
+    async def validate_password(
+        self,
+        password: str,
+        user: User,
+    ) -> bool:
+        is_valid = password_helper.verify_and_update(password, user.hashed_password)
+        log.warning(
+            "User %r is validated.",
+            user.email,
+        )
+
+        return is_valid[0]
 
     async def on_after_register(
         self,

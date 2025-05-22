@@ -1,5 +1,4 @@
 from typing import TYPE_CHECKING
-from sqlalchemy import select
 from fastapi_users_db_sqlalchemy import (
     SQLAlchemyBaseUserTable,
     SQLAlchemyUserDatabase,
@@ -17,7 +16,6 @@ if TYPE_CHECKING:
 class User(Base, IdIntPkMixin, SQLAlchemyBaseUserTable[UserIdType]):
     __tablename__ = "users"
 
-    # Явно указываем колонки для лучшей документированности
     email: Mapped[str] = mapped_column(nullable=False, unique=True, index=True)
     hashed_password: Mapped[str] = mapped_column(nullable=False)
     is_active: Mapped[bool] = mapped_column(default=True, nullable=False)

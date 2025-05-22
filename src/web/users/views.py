@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, Request, Form
+from fastapi import APIRouter, Depends, Request, Form, Path
 from fastapi.responses import RedirectResponse
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -7,7 +7,7 @@ from src.core.authentification.user_manager import UserManager
 from src.core.cruds.users import (
     create_user,
     update_user,
-    get_user,
+    get_user_by_email,
     get_users_list,
     delete_user,
 )
@@ -113,22 +113,21 @@ async def user_update(
 @router.post("/{pk}/edit/", name="web/user_update")
 async def user_update(
     request: Request,
-    user: User = Depends(get_user_by_id),
+    pk: int = Path(...),
     email: str = Form(...),
     password: str = Form(default=None),
     user_manager: UserManager = Depends(get_user_manager),
 ):
+    user = await get_user_by_id(pk=pk, user_manager=user_manager)
     try:
         update_data = UserUpdate(email=email)
         if password:
             update_data.password = password
-        user = await get_user(email=user.email, user_manager=user_manager)
         await update_user(
             user=user,
             user_manager=user_manager,
             user_update=update_data,
         )
-
         return RedirectResponse(
             url=request.url_for("web/user_detail", pk=user.id), status_code=302
         )
@@ -151,8 +150,9 @@ async def user_update(
 @router.post("/{pk}/delete/", name="web/user_delete")
 async def user_delete(
     request: Request,
-    user: User = Depends(get_user_by_id),
-    session: AsyncSession = Depends(db_helper.session_dependency),
+    pk: int = Path(...),
+    user_manager: UserManager = Depends(get_user_manager),
 ):
-    await delete_user(session=session, user=user)
+    user = await get_user_by_id(pk=pk, user_manager=user_manager)
+    await delete_user(user_manager=user_manager, user=user, request=request)
     return RedirectResponse(url=request.url_for("web/users"), status_code=302)

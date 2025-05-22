@@ -8,6 +8,7 @@ from starlette import status
 
 from src.api.dependencies.authentification.users import get_users_db
 from src.api.dependencies.authentification.user_manager import get_user_manager
+from src.core.authentification.user_manager import UserManager
 from src.core.cruds.menu_items import get_menu_items_one
 from src.core.models import (
     db_helper,
@@ -24,7 +25,7 @@ async def get_menu_item_by_id(
     session: AsyncSession = Depends(db_helper.session_dependency),
 ) -> MenuItemModel:
     """
-    Функция получения элемента меню по id..
+    Функция получения элемента меню по id.
     """
     result = await get_menu_items_one(session=session, pk=pk)
     if result:
@@ -40,7 +41,7 @@ async def get_association_by_id(
     session: AsyncSession = Depends(db_helper.session_dependency),
 ) -> OrderMenuAssociation:
     """
-    Функция получения элемента меню по id..
+    Функция получения элемента меню по id.
     """
     query = select(OrderMenuAssociation).where(OrderMenuAssociation.id == pk)
     result = await session.scalar(query)
@@ -80,13 +81,12 @@ async def get_order_by_id(
 
 async def get_user_by_id(
     pk: Annotated[int, Path(ge=1, lt=1_000_000)],
-    session: AsyncSession = Depends(db_helper.session_dependency),
+    user_manager: UserManager = Depends(get_user_manager),
 ) -> User:
     """
-    Функция получения элемента меню по id..
+    Функция получения пользователя по id.
     """
-    query = select(User).where(User.id == pk)
-    result = await session.scalar(query)
+    result = await user_manager.get(pk)
     if result:
         return result
     raise HTTPException(

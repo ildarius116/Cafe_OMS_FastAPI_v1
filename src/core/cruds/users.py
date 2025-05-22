@@ -1,5 +1,5 @@
 from typing import List
-from fastapi import Depends
+from fastapi import Depends, Request
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -9,8 +9,8 @@ from src.core.schemas.users import UserCreate, UserUpdate
 
 
 async def create_user(
-    user_manager: UserManager,
     user_create: UserCreate,
+    user_manager: UserManager,
 ) -> User:
     user = await user_manager.create(
         user_create=user_create,
@@ -19,19 +19,7 @@ async def create_user(
     return user
 
 
-# async def _create_user(
-#     session: AsyncSession,
-#     user_in: UserCreate,
-# ) -> User:
-#     user = User(**user_in.model_dump())
-#     session.add(user)
-#     await session.commit()
-#     # user = await session.scalar(select(User).where(User.id == user.id))
-#     await session.refresh(user)
-#     return user
-
-
-async def get_user(
+async def get_user_by_email(
     email: str,
     user_manager: UserManager,
 ) -> User:
@@ -48,8 +36,8 @@ async def get_users_list(
 
 async def update_user(
     user: User,
-    user_manager: UserManager,
     user_update: UserUpdate,
+    user_manager: UserManager,
 ) -> User:
     upd_user = await user_manager.update(
         user=user,
@@ -59,22 +47,9 @@ async def update_user(
     return upd_user
 
 
-# async def update_user(
-#     session: AsyncSession,
-#     user: User,
-#     update_data: UserUpdate,
-#     partial: bool = False,
-# ) -> User:
-#     for key, value in update_data.model_dump(exclude_unset=partial).items():
-#         setattr(user, key, value)
-#     await session.commit()
-#     await session.refresh(user)
-#     return user
-
-
 async def delete_user(
-    session: AsyncSession,
     user: User,
+    request: Request,
+    user_manager: UserManager,
 ) -> None:
-    await session.delete(user)
-    await session.commit()
+    await user_manager.delete(user, request=request)
