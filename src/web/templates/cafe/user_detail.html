@@ -6,6 +6,10 @@
 <div class="card mb-4">
     <div class="card-header d-flex justify-content-between align-items-center">
         <h2>Пользователь #{{ user.id }}</h2>
+        <form method="post" action="{{ url_for('web/logout') }}" class="mb-0">
+            <input type="hidden" name="_method" value="DELETE">
+            <button type="submit" class="btn btn-primary">Выйти</button>
+        </form>
     </div>
     <div class="card-body">
         <div class="row mb-4">
@@ -35,10 +39,6 @@
                    Назад, к списку пользователей
                 </a>
             </div>
-            <form method="post" action="{{ url_for('web/logout') }}">
-                <input type="hidden" name="_method" value="DELETE">
-                <button type="submit" class="btn btn-danger">Выйти</button>
-            </form>
             <form method="post" action="{{ url_for('web/user_delete', pk=user.id) }}">
                 <input type="hidden" name="_method" value="DELETE">
                 <button type="submit" class="btn btn-danger">Удалить</button>
