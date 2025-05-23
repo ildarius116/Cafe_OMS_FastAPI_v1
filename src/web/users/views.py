@@ -1,17 +1,17 @@
-from fastapi import APIRouter, Depends, Request, Form, Path
+from fastapi import APIRouter, Depends, Request, Form, Path, HTTPException
 from fastapi.responses import RedirectResponse
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from src.core.authentification.dependencies import get_user_manager, current_user
 from src.core.authentification.user_manager import UserManager
+from src.core.cruds.dependencies import get_user_by_id
 from src.core.cruds.users import (
     create_user,
     update_user,
-    get_user_by_email,
     get_users_list,
     delete_user,
 )
-from src.core.dependencies import get_user_manager, get_user_by_id
 from src.core.models import db_helper, User
 from src.core.schemas.users import UserCreate, UserUpdate
 
@@ -87,7 +87,10 @@ async def user_create(
 async def user_details(
     request: Request,
     user: User = Depends(get_user_by_id),
+    current_user: User = Depends(current_user),
 ):
+    if user.id != current_user.id:
+        raise HTTPException(status_code=403, detail="Доступ запрещён")
     return templates.TemplateResponse(
         "cafe/user_detail.html", {"request": request, "user": user}
     )

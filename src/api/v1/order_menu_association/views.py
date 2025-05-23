@@ -14,10 +14,10 @@ from src.core.schemas.order_menu_association import (
 )
 from src.core.schemas.orders import OrderSchema
 from src.core.models import db_helper, OrderModel, OrderMenuAssociation
-from src.core.dependencies import (
+from src.core.cruds.dependencies import (
     get_menu_item_by_id,
-    get_association_by_id,
     get_order_by_id,
+    get_association_by_id,
 )
 
 load_dotenv()

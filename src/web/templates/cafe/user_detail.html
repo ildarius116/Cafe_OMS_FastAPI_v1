@@ -35,6 +35,10 @@
                    Назад, к списку пользователей
                 </a>
             </div>
+            <form method="post" action="{{ url_for('web/logout') }}">
+                <input type="hidden" name="_method" value="DELETE">
+                <button type="submit" class="btn btn-danger">Выйти</button>
+            </form>
             <form method="post" action="{{ url_for('web/user_delete', pk=user.id) }}">
                 <input type="hidden" name="_method" value="DELETE">
                 <button type="submit" class="btn btn-danger">Удалить</button>

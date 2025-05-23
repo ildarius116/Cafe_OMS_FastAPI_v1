@@ -1,13 +1,13 @@
 from fastapi import APIRouter
 
-from .auth.views import router as user_router
+from .auth.views import router as auth_router
 from .menu_items.views import router as menu_item_router
 from .orders.views import router as orders_router
 from .users.views import router as users_router
 
 router = APIRouter()
 router.include_router(
-    user_router,
+    auth_router,
     prefix="/auth",
     tags=["Аутентификация и авторизация"],
 )

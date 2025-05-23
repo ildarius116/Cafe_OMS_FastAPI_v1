@@ -1,13 +1,14 @@
 import logging
 import uvicorn
+from contextlib import asynccontextmanager
 from fastapi import FastAPI, Request, Depends
 from fastapi.templating import Jinja2Templates
-from contextlib import asynccontextmanager
-from typing import AsyncGenerator, Any
-from sqlalchemy.ext.asyncio import AsyncSession
+from typing import AsyncGenerator, Any, Optional
 
+from src.core.authentification.dependencies import current_user_optional
 from src.core.config import settings
-from src.core.models import Base, db_helper
+from src.core.models import User
+
 from src.api import router as router_api_v1
 from src.web import router as router_web
 
@@ -38,19 +39,19 @@ app.include_router(router_web, prefix=settings.web.prefix)
 )
 async def index(
     request: Request,
-    session: AsyncSession = Depends(db_helper.session_dependency),
+    current_user: Optional[User] = Depends(current_user_optional),
 ):
     """
-    Функция получения списка заказов.
+    Функция стартовой страницы.
 
-    :возврат: html-страница списка заказов.
+    :возврат: html-страница приветствия.
     """
-    user = request.query_params.get("user")
+    print(f"index current_user: {current_user}")
     return templates.TemplateResponse(
         name="cafe/index.html",
         request=request,
         context={
-            "current_user": user,
+            "current_user": current_user,
         },
     )
 

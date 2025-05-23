@@ -2,8 +2,8 @@ from typing import List
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from src.core.cruds.dependencies import get_order_by_id
 from src.core.cruds.orders import get_order_one
-from src.core.dependencies import get_order_by_id
 from src.core.models import OrderModel, OrderMenuAssociation, MenuItemModel
 
 

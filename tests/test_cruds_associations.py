@@ -9,7 +9,7 @@ from src.core.cruds.order_menu_association import (
     get_associations_list,
 )
 from src.core.cruds.orders import create_order
-from src.core.dependencies import get_association_by_id
+from src.core.cruds.dependencies import get_association_by_id
 from src.core.models import OrderModel, MenuItemModel, OrderMenuAssociation
 from src.core.schemas.menu_items import MenuItemCreateSchema
 from src.core.schemas.orders import OrderCreateSchema

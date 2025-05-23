@@ -10,7 +10,7 @@ from sqlalchemy.ext.asyncio import (
 )
 
 from src.core.config import settings
-from src.core.dependencies import get_order_by_id, get_menu_item_by_id
+from src.core.cruds.dependencies import get_menu_item_by_id, get_order_by_id
 from src.core.models import (
     Base,
     db_helper,

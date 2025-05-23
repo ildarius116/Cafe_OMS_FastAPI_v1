@@ -1,3 +1,4 @@
+from contextlib import asynccontextmanager
 from typing import TYPE_CHECKING, Annotated
 from fastapi import Depends
 
@@ -7,6 +8,7 @@ if TYPE_CHECKING:
     from sqlalchemy.ext.asyncio import AsyncSession
 
 
+@asynccontextmanager
 async def get_access_tokens_db(
     session: Annotated[
         "AsyncSession",

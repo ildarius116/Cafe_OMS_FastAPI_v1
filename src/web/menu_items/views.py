@@ -9,7 +9,7 @@ from src.core.cruds.menu_items import (
     create_menu_item,
     delete_menu_item,
 )
-from src.core.dependencies import get_menu_item_by_id
+from src.core.cruds.dependencies import get_menu_item_by_id
 from src.core.models import db_helper, MenuItemModel
 from src.core.schemas.menu_items import MenuItemCreateSchema
 

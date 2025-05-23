@@ -4,7 +4,7 @@ from fastapi.templating import Jinja2Templates
 from typing import Dict, Annotated
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.core.dependencies import (
+from src.core.cruds.dependencies import (
     get_menu_item_by_id,
     get_order_by_id,
     get_association_by_id,

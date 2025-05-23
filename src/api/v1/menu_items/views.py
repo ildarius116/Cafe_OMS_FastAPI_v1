@@ -1,25 +1,22 @@
 from fastapi import APIRouter, status, Depends
 from typing import List
-from dotenv import load_dotenv
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from src.core.cruds.dependencies import get_menu_item_by_id
 from src.core.cruds.menu_items import (
     create_menu_item,
     get_menu_items_list,
     update_menu_item,
     delete_menu_item,
 )
+from src.core.models import db_helper, MenuItemModel
 from src.core.schemas.menu_items import (
     MenuItemSchema,
     MenuItemCreateSchema,
     MenuItemUpdateSchema,
     MenuItemUpdatePartialSchema,
 )
-from src.core.models import db_helper, MenuItemModel
-from src.core.dependencies import get_menu_item_by_id
 
-
-load_dotenv()
 router = APIRouter()
 
 

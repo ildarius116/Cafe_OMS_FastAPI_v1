@@ -1,28 +1,74 @@
 {% extends 'base.html' %}
 
-{% block title %}Стартовая страница{% endblock %}
+{% block title %}Добро пожаловать в Café OMS{% endblock %}
 
 {% block content %}
-
-<div class="card mb-4">
-    <div class="card-header">
-        <form method="get" class="row g-2">
-              <div class="col-md-2">
-                {% if current_user %}
-                <div class="d-flex justify-content-between mb-4">
-                    <h1>Здравствуйте, {{current_user.email}}</h1>
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8 col-md-10">
+            <div class="card shadow-lg border-0 rounded-lg">
+                <div class="card-header bg-primary text-white">
+                    <h2 class="text-center my-3">Добро пожаловать в Café OMS</h2>
                 </div>
-                <a href="{{ url_for('web/orders') }}" class="btn btn-outline-secondary">К заказам</a>
-                {% else %}
-                <div class="d-flex justify-content-between mb-4">
-                    <h1>Здравствуйте, Вы не зарегистрированы</h1>
+                <div class="card-body p-5">
+                    {% if current_user %}
+                    <div class="text-center mb-4">
+                        <div class="avatar avatar-xl bg-primary bg-opacity-10 rounded-circle mb-3">
+                            <i class="bi bi-person-fill text-primary fs-1"></i>
+                        </div>
+                        <h3 class="mb-3">Здравствуйте, <span class="text-primary">{{current_user.email}}</span></h3>
+                        <p class="text-muted mb-4">Рады видеть вас снова!</p>
+                        <a href="{{ url_for('web/orders') }}" class="btn btn-primary btn-lg px-4">
+                            <i class="bi bi-cart me-2"></i>Перейти к заказам
+                        </a>
+                    </div>
+                    {% else %}
+                    <div class="text-center mb-4">
+                        <div class="avatar avatar-xl bg-light rounded-circle mb-3">
+                            <i class="bi bi-person text-muted fs-1"></i>
+                        </div>
+                        <h3 class="mb-3">Здравствуйте, гость</h3>
+                        <p class="text-muted mb-4">Войдите или зарегистрируйтесь для продолжения</p>
+                        <div class="d-grid gap-3 d-sm-flex justify-content-sm-center">
+                            <a href="{{ url_for('web/login') }}" class="btn btn-primary btn-lg px-4">
+                                <i class="bi bi-box-arrow-in-right me-2"></i>Войти
+                            </a>
+                            <a href="{{ url_for('web/user_create') }}" class="btn btn-outline-secondary btn-lg px-4">
+                                <i class="bi bi-person-plus me-2"></i>Регистрация
+                            </a>
+                        </div>
+                    </div>
+                    {% endif %}
                 </div>
-                <a href="{{ url_for('web/login') }}" class="btn btn-outline-secondary">Войти</a>
-                <a href="{{ url_for('web/user_create') }}" class="btn btn-outline-secondary">Зарегистрироваться</a>
-                {% endif %}
+                <div class="card-footer bg-transparent text-center py-3">
+                    <small class="text-muted">Café OMS v1.0</small>
+                </div>
             </div>
-        </form>
+        </div>
     </div>
 </div>
 
+<style>
+    .avatar {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 80px;
+        height: 80px;
+    }
+    .card {
+        transition: transform 0.3s ease;
+    }
+    .card:hover {
+        transform: translateY(-5px);
+    }
+    .btn-primary {
+        background-color: #4e73df;
+        border-color: #4e73df;
+    }
+    .btn-primary:hover {
+        background-color: #3a5ec0;
+        border-color: #3a5ec0;
+    }
+</style>
 {% endblock %}
