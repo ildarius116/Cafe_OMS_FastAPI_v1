@@ -14,6 +14,8 @@ from src.core.models import (
     OrderModel,
     OrderMenuAssociation,
     User,
+    Role,
+    Permission,
 )
 
 
@@ -89,4 +91,38 @@ async def get_user_by_id(
     raise HTTPException(
         status_code=status.HTTP_404_NOT_FOUND,
         detail=f"User {pk} not found!",
+    )
+
+
+async def get_role_by_id(
+    pk: Annotated[int, Path(ge=1, lt=1_000_000)],
+    session: AsyncSession = Depends(db_helper.session_dependency),
+) -> Role:
+    """
+    Функция получения роли по id.
+    """
+    query = select(Role).where(Role.id == pk)
+    result = await session.scalar(query)
+    if result:
+        return result
+    raise HTTPException(
+        status_code=status.HTTP_404_NOT_FOUND,
+        detail=f"Role {pk} not found!",
+    )
+
+
+async def get_permission_by_id(
+    pk: Annotated[int, Path(ge=1, lt=1_000_000)],
+    session: AsyncSession = Depends(db_helper.session_dependency),
+) -> Permission:
+    """
+    Функция получения разрешения по id.
+    """
+    query = select(Permission).where(Permission.id == pk)
+    result = await session.scalar(query)
+    if result:
+        return result
+    raise HTTPException(
+        status_code=status.HTTP_404_NOT_FOUND,
+        detail=f"Permission {pk} not found!",
     )
