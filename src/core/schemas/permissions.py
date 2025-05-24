@@ -2,6 +2,8 @@ from pydantic import BaseModel, ConfigDict
 
 
 class PermissionBase(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     name: str
 
 
@@ -14,6 +16,4 @@ class PermissionUpdate(PermissionBase):
 
 
 class PermissionResponse(PermissionBase):
-    model_config = ConfigDict(from_attributes=True)
-
     id: int

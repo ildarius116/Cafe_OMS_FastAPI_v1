@@ -6,6 +6,7 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from typing import TYPE_CHECKING, List
 
 from src.core.models import Base, IdIntPkMixin
+from src.core.models.roles import user_roles
 from src.core.types.user_id import UserIdType
 
 
@@ -23,7 +24,10 @@ class User(Base, IdIntPkMixin, SQLAlchemyBaseUserTable[UserIdType]):
     is_superuser: Mapped[bool] = mapped_column(default=False, nullable=False)
     is_verified: Mapped[bool] = mapped_column(default=False, nullable=False)
 
-    roles: Mapped[List["Role"]] = relationship(back_populates="user")
+    roles: Mapped[List["Role"]] = relationship(
+        secondary=user_roles,
+        back_populates="users",
+    )
 
     @classmethod
     def get_db(cls, session: "AsyncSession"):

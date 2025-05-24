@@ -5,6 +5,8 @@ from src.core.models import Permission
 
 
 class RoleBase(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     name: str
 
 
@@ -17,8 +19,6 @@ class RoleUpdate(RoleBase):
 
 
 class Role(RoleBase):
-    model_config = ConfigDict(from_attributes=True)
-
     id: int
     permissions: List[str]
 
