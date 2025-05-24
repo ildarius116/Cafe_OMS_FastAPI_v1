@@ -95,13 +95,13 @@ async def get_user_by_id(
 
 
 async def get_role_by_id(
-    pk: Annotated[int, Path(ge=1, lt=1_000_000)],
+    role_pk: Annotated[int, Path(ge=1, lt=1_000_000)],
     session: AsyncSession = Depends(db_helper.session_dependency),
 ) -> Role:
     """
     Функция получения роли по id.
     """
-    query = select(Role).where(Role.id == pk)
+    query = select(Role).where(Role.id == role_pk)
     result = await session.scalar(query)
     if result:
         return result
@@ -112,13 +112,13 @@ async def get_role_by_id(
 
 
 async def get_permission_by_id(
-    pk: Annotated[int, Path(ge=1, lt=1_000_000)],
+    perm_pk: Annotated[int, Path(ge=1, lt=1_000_000)],
     session: AsyncSession = Depends(db_helper.session_dependency),
 ) -> Permission:
     """
     Функция получения разрешения по id.
     """
-    query = select(Permission).where(Permission.id == pk)
+    query = select(Permission).where(Permission.id == perm_pk)
     result = await session.scalar(query)
     if result:
         return result

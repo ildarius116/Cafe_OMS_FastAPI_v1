@@ -1,8 +1,8 @@
 from contextlib import asynccontextmanager
-
-from fastapi import Depends, Request
+from fastapi import Depends, Request, HTTPException, status
 from fastapi_users.authentication import Authenticator
 from fastapi_users.authentication.strategy import DatabaseStrategy
+from typing import List
 
 from src.api.dependencies.authentification.access_tokens import get_access_tokens_db
 from src.api.dependencies.authentification.backend import authentication_backend
@@ -11,7 +11,7 @@ from src.api.dependencies.authentification.users import get_users_db
 from src.api.dependencies.authentification.user_manager import get_user_manager
 from src.core.authentification.user_manager import UserManager
 from src.core.config import settings
-from src.core.models import db_helper
+from src.core.models import db_helper, User
 
 get_users_db_context = asynccontextmanager(get_users_db)
 get_user_manager_context = asynccontextmanager(get_user_manager)
@@ -60,3 +60,28 @@ async def current_user_optional(
                 return user
     except Exception:
         return None
+
+
+def role_required(roles: List[str]):
+    def role_checker(current_user: User = Depends(current_user_optional)):
+        if not any(role.name in roles for role in current_user.roles):
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN, detail="Operation not permitted"
+            )
+        return current_user
+
+    return role_checker
+
+
+def permission_required(permission: str):
+    def permission_checker(current_user: User = Depends(current_user_optional)):
+        permissions = [
+            perm.name for role in current_user.roles for perm in role.permissions
+        ]
+        if permission not in permissions:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN, detail="Operation not permitted"
+            )
+        return current_user
+
+    return permission_checker
