@@ -3,7 +3,7 @@ import logging
 
 from src.actions.create_orders import create_orders, orders_data
 from src.actions.create_menu_items import create_menu_items, menu_items_data
-from src.actions.create_associations import create_associations
+from src.actions.create_item_to_order_associations import create_associations
 from src.core.models import db_helper
 
 log = logging.getLogger(__name__)
