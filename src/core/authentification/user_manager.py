@@ -1,10 +1,11 @@
 import logging
-from typing import Optional, TYPE_CHECKING
+from typing import Optional, TYPE_CHECKING, Union
 from fastapi_users import BaseUserManager, IntegerIDMixin
 from fastapi_users.password import PasswordHelper
 
 from src.core.config import settings
 from src.core.models import User
+from src.core.schemas.users import UserCreate
 from src.core.types.user_id import UserIdType
 
 if TYPE_CHECKING:
@@ -21,8 +22,11 @@ class UserManager(IntegerIDMixin, BaseUserManager[User, UserIdType]):
     async def validate_password(
         self,
         password: str,
-        user: User,
+        user: Union[User, UserCreate],
     ) -> bool:
+        if isinstance(user, UserCreate):
+            return bool(password)
+
         is_valid = password_helper.verify_and_update(password, user.hashed_password)
         if is_valid[0]:
             log.warning(

@@ -57,12 +57,7 @@ class Role(Base, IdIntPkMixin):
     )
 
     def __str__(self) -> str:
-        return (
-            f"<Role(id={self.id}, "
-            f"name={self.name}, "
-            f"user={self.users}, "
-            f"roles={self.permissions}>"
-        )
+        return f"<Role(id={self.id}, " f"name={self.name}" f"roles={self.permissions}>"
 
     def __repr__(self) -> str:
         return str(self)

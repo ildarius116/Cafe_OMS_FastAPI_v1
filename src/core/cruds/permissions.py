@@ -20,7 +20,7 @@ async def get_permission(session: AsyncSession, pk: int) -> Permission | None:
     return await session.get(Permission, pk)
 
 
-async def get_all_permissions(
+async def get_permissions_list(
     session: AsyncSession, skip: int, limit: int
 ) -> List[Permission]:
     query = select(Permission).offset(skip).limit(limit).order_by(Permission.id)

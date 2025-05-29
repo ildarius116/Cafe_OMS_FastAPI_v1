@@ -18,7 +18,7 @@ class Permission(Base, IdIntPkMixin):
     )
 
     def __str__(self) -> str:
-        return f"<Permission(id={self.id}, name={self.name}, roles={self.roles}>"
+        return f"<Permission(id={self.id}, name={self.name}>"
 
     def __repr__(self) -> str:
         return str(self)

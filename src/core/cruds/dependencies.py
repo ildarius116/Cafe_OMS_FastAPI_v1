@@ -94,6 +94,31 @@ async def get_user_by_id(
     )
 
 
+async def get_user_by_email(
+    email: Annotated[int, Path(ge=1, lt=1_000_000)],
+    session: AsyncSession = Depends(db_helper.session_dependency),
+    user_manager: UserManager = Depends(get_user_manager),
+) -> User:
+    """
+    Функция получения пользователя по id.
+    """
+    query = (
+        select(Role)
+        .options(
+            selectinload(User.roles),
+        )
+        .where(User.email == email)
+        .order_by(Role.id)
+    )
+    result = await session.scalar(query)
+    if result:
+        return result
+    raise HTTPException(
+        status_code=status.HTTP_404_NOT_FOUND,
+        detail=f"User {pk} not found!",
+    )
+
+
 async def get_role_by_id(
     role_pk: Annotated[int, Path(ge=1, lt=1_000_000)],
     session: AsyncSession = Depends(db_helper.session_dependency),
@@ -101,13 +126,20 @@ async def get_role_by_id(
     """
     Функция получения роли по id.
     """
-    query = select(Role).where(Role.id == role_pk)
+    query = (
+        select(Role)
+        .options(
+            selectinload(Role.permissions),
+        )
+        .where(Role.id == role_pk)
+        .order_by(Role.id)
+    )
     result = await session.scalar(query)
     if result:
         return result
     raise HTTPException(
         status_code=status.HTTP_404_NOT_FOUND,
-        detail=f"Role {pk} not found!",
+        detail=f"Role {role_pk} not found!",
     )
 
 

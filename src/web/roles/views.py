@@ -8,7 +8,7 @@ from src.core.cruds.roles import (
     create_role,
     update_role,
     delete_role,
-    get_all_roles,
+    get_roles_list,
 )
 from src.core.models import db_helper, Role
 from src.core.schemas.roles import RoleCreate, RoleUpdate, Role as RoleSchema
@@ -23,11 +23,9 @@ templates = Jinja2Templates(directory="src/web/templates")
     dependencies=[Depends(permission_required("read_all_roles"))],
 )
 async def read_roles(
-    skip: int = 0,
-    limit: int = 10,
     session: AsyncSession = Depends(db_helper.session_dependency),
 ):
-    return get_all_roles(session, skip, limit)
+    return await get_roles_list(session=session)
 
 
 @router.post(

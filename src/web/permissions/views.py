@@ -7,7 +7,7 @@ from src.core.cruds.dependencies import get_role_by_id, get_permission_by_id
 from src.core.cruds.permissions import (
     update_permission,
     delete_permission,
-    get_all_permissions,
+    get_permissions_list,
     add_permission_to_role,
     remove_permission_from_role,
     create_permission,
@@ -93,7 +93,7 @@ async def read_permissions(
     limit: int = 10,
     session: AsyncSession = Depends(db_helper.session_dependency),
 ):
-    return get_all_permissions(session, skip, limit)
+    return get_permissions_list(session, skip, limit)
 
 
 @router.post(

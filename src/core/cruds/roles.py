@@ -3,6 +3,8 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from typing import List
 
+from sqlalchemy.orm import selectinload
+
 from src.core.models import Role, User
 from src.core.schemas.roles import RoleCreate, RoleUpdate
 
@@ -30,8 +32,14 @@ async def get_role_by_name(session: AsyncSession, name: str) -> Role | None:
     )
 
 
-async def get_all_roles(session: AsyncSession, skip: int, limit: int) -> List[Role]:
-    query = select(Role).offset(skip).limit(limit).order_by(Role.id)
+async def get_roles_list(session: AsyncSession) -> List[Role]:
+    query = (
+        select(Role)
+        .options(
+            selectinload(Role.permissions),
+        )
+        .order_by(Role.id)
+    )
     result = await session.execute(query)
     result = result.scalars().all()
     return list(result)
