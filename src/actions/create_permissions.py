@@ -19,6 +19,7 @@ def permissions_data() -> list:
         PermissionCreate(name="delete_permission"),
         PermissionCreate(name="add_permission_to_role"),
         PermissionCreate(name="remove_permission_from_role"),
+        ...,
         PermissionCreate(name="read_role"),
         PermissionCreate(name="read_all_roles"),
         PermissionCreate(name="create_role"),
@@ -26,11 +27,26 @@ def permissions_data() -> list:
         PermissionCreate(name="delete_role"),
         PermissionCreate(name="add_role_to_user"),
         PermissionCreate(name="remove_role_from_user"),
+        ...,
         PermissionCreate(name="read_user"),
         PermissionCreate(name="read_all_users"),
         PermissionCreate(name="create_user"),
         PermissionCreate(name="update_user"),
         PermissionCreate(name="delete_user"),
+        ...,
+        PermissionCreate(name="read_order"),
+        PermissionCreate(name="read_all_orders"),
+        PermissionCreate(name="create_order"),
+        PermissionCreate(name="update_order"),
+        PermissionCreate(name="delete_order"),
+        ...,
+        PermissionCreate(name="read_menu_item"),
+        PermissionCreate(name="read_all_menu_items"),
+        PermissionCreate(name="create_menu_item"),
+        PermissionCreate(name="update_menu_item"),
+        PermissionCreate(name="delete_menu_item"),
+        PermissionCreate(name="add_menu_item_into_order"),
+        PermissionCreate(name="del_menu_item_from_order"),
     ]
     return data_list
 
@@ -41,8 +57,9 @@ async def create_permissions(
 ) -> None:
     """Функция создания заказов"""
     for permission_in in permissions_data:
-        permission: Permission = Permission(**permission_in.model_dump())
-        session.add(permission)
+        if hasattr(permission_in, "model_dump"):
+            permission: Permission = Permission(**permission_in.model_dump())
+            session.add(permission)
     await session.commit()
     log.warning(f"Created {len(permissions_data)} permissions")
 
