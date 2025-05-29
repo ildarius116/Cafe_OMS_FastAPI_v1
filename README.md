@@ -64,5 +64,5 @@ __Доступные адреса (эндпоинты) и функции:__
 ### _Примечания:_
 1. По необходимости, запустить тесты, командой: `pytest`
 * ![tests.JPG](README%2Ftests.JPG)
-2. По необходимости, создайте тестовые данные заказов и блюд: `python actions/create_full_orders.py `
+2. По необходимости, создайте тестовые данные заказов и блюд: `python -m src.actions.create_full_orders `
 * ![create_full_orders.JPG](README%2Fcreate_full_orders.JPG)
