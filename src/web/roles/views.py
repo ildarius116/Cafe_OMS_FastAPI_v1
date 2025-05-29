@@ -1,5 +1,4 @@
-from fastapi import APIRouter, Depends, Request, Form, Path, HTTPException
-from fastapi.responses import RedirectResponse
+from fastapi import APIRouter, Depends, HTTPException
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -12,7 +11,7 @@ from src.core.cruds.roles import (
     get_all_roles,
 )
 from src.core.models import db_helper, Role
-from src.core.schemas.roles import RoleCreate, RoleUpdate
+from src.core.schemas.roles import RoleCreate, RoleUpdate, Role as RoleSchema
 
 router = APIRouter()
 templates = Jinja2Templates(directory="src/web/templates")
@@ -20,7 +19,7 @@ templates = Jinja2Templates(directory="src/web/templates")
 
 @router.get(
     "/",
-    response_model=list[Role],
+    response_model=list[RoleSchema],
     dependencies=[Depends(permission_required("read_all_roles"))],
 )
 async def read_roles(
@@ -33,7 +32,7 @@ async def read_roles(
 
 @router.post(
     "/",
-    response_model=Role,
+    response_model=RoleSchema,
     status_code=201,
     dependencies=[Depends(permission_required("create_role"))],
 )
@@ -46,7 +45,7 @@ async def create_new_role(
 
 @router.get(
     "/{role_pk}",
-    response_model=Role,
+    response_model=RoleSchema,
     dependencies=[Depends(permission_required("read_role"))],
 )
 async def read_role(
@@ -57,7 +56,7 @@ async def read_role(
 
 @router.put(
     "/{role_pk}",
-    response_model=Role,
+    response_model=RoleSchema,
     dependencies=[Depends(permission_required("update_role"))],
 )
 async def update_role_endpoint(

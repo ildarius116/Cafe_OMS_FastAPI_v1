@@ -1,5 +1,4 @@
-from fastapi import APIRouter, Depends, Request, Form, Path, HTTPException
-from fastapi.responses import RedirectResponse
+from fastapi import APIRouter, Depends, HTTPException
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -19,6 +18,7 @@ from src.core.schemas.permissions import (
     PermissionCreate,
     PermissionUpdate,
 )
+from src.core.schemas.roles import Role as RoleSchema
 
 router = APIRouter()
 templates = Jinja2Templates(directory="src/web/templates")
@@ -98,7 +98,7 @@ async def read_permissions(
 
 @router.post(
     "/roles/{role_pk}/permissions/{perm_pk}",
-    response_model=Role,
+    response_model=RoleSchema,
     status_code=200,
     dependencies=[Depends(permission_required("add_permission_to_role"))],
 )
@@ -122,7 +122,7 @@ async def add_permission_to_role_endpoint(
 
 @router.delete(
     "/roles/{role_pk}/permissions/{perm_pk}",
-    response_model=Role,
+    response_model=RoleSchema,
     status_code=200,
     dependencies=[Depends(permission_required("remove_permission_from_role"))],
 )
