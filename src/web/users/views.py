@@ -10,6 +10,7 @@ from src.core.authentification.dependencies import (
 )
 from src.core.authentification.user_manager import UserManager
 from src.core.cruds.dependencies import get_user_by_id_dep
+from src.core.cruds.roles import add_role_to_user, get_role_by_name
 from src.core.models import db_helper, User
 from src.core.cruds.users import (
     create_user,
@@ -66,6 +67,7 @@ async def user_create(
     email: str = Form(...),
     password: str = Form(...),
     user_manager: UserManager = Depends(get_user_manager),
+    session: AsyncSession = Depends(db_helper.session_dependency),
 ):
     try:
         user_create = UserCreate(
@@ -79,6 +81,9 @@ async def user_create(
             user_manager=user_manager,
             user_create=user_create,
         )
+        user = await get_user_by_id_dep(session=session, pk=user.id)
+        guest_role = await get_role_by_name(session=session, name="guest")
+        user = await add_role_to_user(session=session, user=user, role=guest_role)
         return RedirectResponse(
             url=request.url_for("web/user_detail", pk=user.id), status_code=302
         )
