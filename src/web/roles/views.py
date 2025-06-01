@@ -20,7 +20,7 @@ templates = Jinja2Templates(directory="src/web/templates")
 @router.get(
     "/",
     response_model=list[RoleSchema],
-    dependencies=[Depends(permission_required("read_all_roles"))],
+    dependencies=[permission_required("read_all_roles")],
 )
 async def read_roles(
     session: AsyncSession = Depends(db_helper.session_dependency),
@@ -32,7 +32,7 @@ async def read_roles(
     "/",
     response_model=RoleSchema,
     status_code=201,
-    dependencies=[Depends(permission_required("create_role"))],
+    dependencies=[permission_required("create_role")],
 )
 async def create_new_role(
     role: RoleCreate,
@@ -44,7 +44,7 @@ async def create_new_role(
 @router.get(
     "/{role_pk}",
     response_model=RoleSchema,
-    dependencies=[Depends(permission_required("read_role"))],
+    dependencies=[permission_required("read_role")],
 )
 async def read_role(
     role: Role = Depends(get_role_by_id),
@@ -55,7 +55,7 @@ async def read_role(
 @router.put(
     "/{role_pk}",
     response_model=RoleSchema,
-    dependencies=[Depends(permission_required("update_role"))],
+    dependencies=[permission_required("update_role")],
 )
 async def update_role_endpoint(
     role_update: RoleUpdate,
@@ -71,7 +71,7 @@ async def update_role_endpoint(
 @router.delete(
     "/{role_pk}",
     status_code=204,
-    dependencies=[Depends(permission_required("delete_role"))],
+    dependencies=[permission_required("delete_role")],
 )
 async def delete_role_endpoint(
     role: Role = Depends(get_role_by_id),

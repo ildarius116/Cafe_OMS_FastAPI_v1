@@ -28,7 +28,7 @@ templates = Jinja2Templates(directory="src/web/templates")
     "/permissions/",
     response_model=PermissionResponse,
     status_code=201,
-    dependencies=[Depends(permission_required("create_permission"))],
+    dependencies=[permission_required("create_permission")],
 )
 async def create_new_permission(
     permission: PermissionCreate,
@@ -40,7 +40,7 @@ async def create_new_permission(
 @router.get(
     "/permissions/{permission_id}",
     response_model=PermissionResponse,
-    dependencies=[Depends(permission_required("read_permission"))],
+    dependencies=[permission_required("read_permission")],
 )
 async def read_permission(
     permission: Permission = Depends(get_permission_by_id),
@@ -53,7 +53,7 @@ async def read_permission(
 @router.put(
     "/permissions/{perm_pk}",
     response_model=PermissionResponse,
-    dependencies=[Depends(permission_required("update_permission"))],
+    dependencies=[permission_required("update_permission")],
 )
 async def update_permission_endpoint(
     permission_update: PermissionUpdate,
@@ -73,7 +73,7 @@ async def update_permission_endpoint(
 @router.delete(
     "/permissions/{perm_pk}",
     status_code=204,
-    dependencies=[Depends(permission_required("delete_permission"))],
+    dependencies=[permission_required("delete_permission")],
 )
 async def delete_permission_endpoint(
     permission: Permission = Depends(get_permission_by_id),
@@ -86,7 +86,7 @@ async def delete_permission_endpoint(
 @router.get(
     "/permissions/",
     response_model=list[PermissionResponse],
-    dependencies=[Depends(permission_required("read_all_permissions"))],
+    dependencies=[permission_required("read_all_permissions")],
 )
 async def read_permissions(
     skip: int = 0,
@@ -100,7 +100,7 @@ async def read_permissions(
     "/roles/{role_pk}/permissions/{perm_pk}",
     response_model=RoleSchema,
     status_code=200,
-    dependencies=[Depends(permission_required("add_permission_to_role"))],
+    dependencies=[permission_required("add_permission_to_role")],
 )
 async def add_permission_to_role_endpoint(
     role: Role = Depends(get_role_by_id),
@@ -124,7 +124,7 @@ async def add_permission_to_role_endpoint(
     "/roles/{role_pk}/permissions/{perm_pk}",
     response_model=RoleSchema,
     status_code=200,
-    dependencies=[Depends(permission_required("remove_permission_from_role"))],
+    dependencies=[permission_required("remove_permission_from_role")],
 )
 async def remove_permission_from_role_endpoint(
     role: Role = Depends(get_role_by_id),

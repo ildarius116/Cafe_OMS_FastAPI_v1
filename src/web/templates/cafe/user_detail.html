@@ -25,6 +25,24 @@
                     <li class="list-group-item">
                         <strong>Суперпользователь:</strong> {% if user.is_superuser %}Да{% else %}Нет{% endif %}
                     </li>
+                    <li class="list-group-item">
+                        <strong>Роль:</strong>
+                        {% if user.roles %}
+                            {% for role in user.roles %}
+                                {{ role.name }}{% if not loop.last %}, {% endif %}
+                            {% endfor %}
+                        {% else %}
+                            Нет ролей
+                        {% endif %}
+                    </li>
+                    <li class="list-group-item">
+                        <strong>Разрешения:</strong>
+                        {% for role in user.roles %}
+                            {% for perm in role.permissions %}
+                                {{ perm.name }}{% if not loop.last %}, {% endif %}
+                            {% endfor %}
+                        {% endfor %}
+                    </li>
                 </ul>
             </div>
         </div>

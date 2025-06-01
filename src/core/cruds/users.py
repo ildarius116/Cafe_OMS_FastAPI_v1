@@ -2,6 +2,7 @@ from typing import List
 from fastapi import Depends, Request
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload
 
 from src.core.authentification.user_manager import UserManager
 from src.core.models import User, db_helper
@@ -29,8 +30,14 @@ async def get_user_by_email(
 async def get_users_list(
     session: AsyncSession = Depends(db_helper.session_dependency),
 ) -> List[User]:
-    result = await session.execute(select(User))
-    users = result.scalars().all()
+    query = (
+        select(User)
+        .options(
+            selectinload(User.roles),
+        )
+        .order_by(User.id)
+    )
+    users = await session.scalars(query)
     return list(users)
 
 

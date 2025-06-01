@@ -3,23 +3,31 @@ from fastapi.responses import RedirectResponse
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.core.authentification.dependencies import get_user_manager, current_user
+from src.core.authentification.dependencies import (
+    get_user_manager,
+    permission_required,
+    current_user_optional,
+)
 from src.core.authentification.user_manager import UserManager
 from src.core.cruds.dependencies import get_user_by_id
+from src.core.models import db_helper, User
 from src.core.cruds.users import (
     create_user,
     update_user,
     get_users_list,
     delete_user,
 )
-from src.core.models import db_helper, User
 from src.core.schemas.users import UserCreate, UserUpdate
 
 router = APIRouter()
 templates = Jinja2Templates(directory="src/web/templates")
 
 
-@router.get("/", name="web/users")
+@router.get(
+    "/",
+    name="web/users",
+    dependencies=[permission_required("read_all_users")],
+)
 async def users_list(
     request: Request,
     session: AsyncSession = Depends(db_helper.session_dependency),
@@ -30,7 +38,11 @@ async def users_list(
     )
 
 
-@router.get("/new/", name="web/user_create")
+@router.get(
+    "/new/",
+    name="web/user_create",
+    dependencies=[permission_required("create_user")],
+)
 async def user_create(request: Request):
     return templates.TemplateResponse(
         "cafe/user_form.html",
@@ -43,7 +55,11 @@ async def user_create(request: Request):
     )
 
 
-@router.post("/new/", name="web/user_create")
+@router.post(
+    "/new/",
+    name="web/user_create",
+    dependencies=[permission_required("create_user")],
+)
 async def user_create(
     request: Request,
     email: str = Form(...),
@@ -83,24 +99,44 @@ async def user_create(
     )
 
 
-@router.get("/{pk}/", name="web/user_detail")
+@router.get(
+    "/{pk}/",
+    name="web/user_detail",
+    dependencies=[permission_required("read_all_users")],
+)
 async def user_details(
     request: Request,
     user: User = Depends(get_user_by_id),
-    current_user: User = Depends(current_user),
+    current_user: User = Depends(current_user_optional),
 ):
-    if user.id != current_user.id:
+
+    if user.id != current_user.id and not any(
+        (role.name == "admin" or role.name == "superuser")
+        for role in current_user.roles
+    ):
         raise HTTPException(status_code=403, detail="Доступ запрещён")
+
     return templates.TemplateResponse(
         "cafe/user_detail.html", {"request": request, "user": user}
     )
 
 
-@router.get("/{pk}/edit/", name="web/user_update")
+@router.get(
+    "/{pk}/edit/",
+    name="web/user_update",
+    dependencies=[permission_required("update_user")],
+)
 async def user_update(
     request: Request,
     user: User = Depends(get_user_by_id),
+    current_user: User = Depends(current_user_optional),
 ):
+    if user.id != current_user.id and not any(
+        (role.name == "admin" or role.name == "superuser")
+        for role in current_user.roles
+    ):
+        raise HTTPException(status_code=403, detail="Доступ запрещён")
+
     return templates.TemplateResponse(
         "cafe/user_form.html",
         {
@@ -113,15 +149,27 @@ async def user_update(
     )
 
 
-@router.post("/{pk}/edit/", name="web/user_update")
+@router.post(
+    "/{pk}/edit/",
+    name="web/user_update",
+    dependencies=[permission_required("update_user")],
+)
 async def user_update(
     request: Request,
     pk: int = Path(...),
     email: str = Form(...),
     password: str = Form(default=None),
     user_manager: UserManager = Depends(get_user_manager),
+    current_user: User = Depends(current_user_optional),
 ):
     user = await get_user_by_id(pk=pk, user_manager=user_manager)
+
+    if user.id != current_user.id and not any(
+        (role.name == "admin" or role.name == "superuser")
+        for role in current_user.roles
+    ):
+        raise HTTPException(status_code=403, detail="Доступ запрещён")
+
     try:
         update_data = UserUpdate(email=email)
         if password:
@@ -150,12 +198,29 @@ async def user_update(
         )
 
 
-@router.post("/{pk}/delete/", name="web/user_delete")
+@router.post(
+    "/{pk}/delete/",
+    name="web/user_delete",
+    dependencies=[permission_required("delete_user")],
+)
 async def user_delete(
     request: Request,
     pk: int = Path(...),
     user_manager: UserManager = Depends(get_user_manager),
+    current_user: User = Depends(current_user_optional),
 ):
     user = await get_user_by_id(pk=pk, user_manager=user_manager)
+
+    if user.id == current_user.id:
+        raise HTTPException(
+            status_code=400, detail="Нельзя удалить свой собственный аккаунт"
+        )
+
+    if not any(
+        (role.name == "admin" or role.name == "superuser")
+        for role in current_user.roles
+    ):
+        raise HTTPException(status_code=403, detail="Доступ запрещён")
+
     await delete_user(user_manager=user_manager, user=user, request=request)
     return RedirectResponse(url=request.url_for("web/users"), status_code=302)

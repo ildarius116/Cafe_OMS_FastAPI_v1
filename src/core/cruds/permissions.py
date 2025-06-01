@@ -7,7 +7,8 @@ from src.core.schemas.permissions import PermissionCreate, PermissionUpdate
 
 
 async def create_permission(
-    session: AsyncSession, permission_in: PermissionCreate
+    session: AsyncSession,
+    permission_in: PermissionCreate,
 ) -> Permission:
     permission = Permission(name=permission_in.name)
     session.add(permission)
@@ -16,12 +17,17 @@ async def create_permission(
     return permission
 
 
-async def get_permission(session: AsyncSession, pk: int) -> Permission | None:
+async def get_permission(
+    session: AsyncSession,
+    pk: int,
+) -> Permission | None:
     return await session.get(Permission, pk)
 
 
 async def get_permissions_list(
-    session: AsyncSession, skip: int, limit: int
+    session: AsyncSession,
+    skip: int,
+    limit: int,
 ) -> List[Permission]:
     query = select(Permission).offset(skip).limit(limit).order_by(Permission.id)
     result = await session.execute(query)
@@ -43,7 +49,10 @@ async def update_permission(
     return permission
 
 
-async def delete_permission(session: AsyncSession, permission: Permission) -> bool:
+async def delete_permission(
+    session: AsyncSession,
+    permission: Permission,
+) -> bool:
     if not permission:
         return False
     await session.delete(permission)
@@ -52,7 +61,9 @@ async def delete_permission(session: AsyncSession, permission: Permission) -> bo
 
 
 async def add_permission_to_role(
-    session: AsyncSession, role: Role, permission: Permission
+    session: AsyncSession,
+    role: Role,
+    permission: Permission,
 ) -> Role:
     if permission not in role.permissions:
         role.permissions.append(permission)
@@ -62,7 +73,9 @@ async def add_permission_to_role(
 
 
 async def remove_permission_from_role(
-    session: AsyncSession, role: Role, permission: Permission
+    session: AsyncSession,
+    role: Role,
+    permission: Permission,
 ) -> Role:
     role.permissions.remove(permission)
     await session.commit()

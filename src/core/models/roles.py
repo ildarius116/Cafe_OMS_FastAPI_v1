@@ -57,7 +57,12 @@ class Role(Base, IdIntPkMixin):
     )
 
     def __str__(self) -> str:
-        return f"<Role(id={self.id}, " f"name={self.name}" f"roles={self.permissions}>"
+        try:
+            return (
+                f"<Role(id={self.id}, " f"name={self.name}" f"roles={self.permissions}>"
+            )
+        except Exception:
+            return "<Role>"
 
     def __repr__(self) -> str:
-        return str(self)
+        return self.__str__()

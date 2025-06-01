@@ -9,7 +9,10 @@ from src.core.models import Role, User
 from src.core.schemas.roles import RoleCreate, RoleUpdate
 
 
-async def create_role(session: AsyncSession, role_in: RoleCreate) -> Role:
+async def create_role(
+    session: AsyncSession,
+    role_in: RoleCreate,
+) -> Role:
     role = Role(name=role_in.name)
     session.add(role)
     await session.commit()
@@ -17,11 +20,17 @@ async def create_role(session: AsyncSession, role_in: RoleCreate) -> Role:
     return role
 
 
-async def get_role_by_id(session: AsyncSession, pk: int) -> Role | None:
+async def get_role_by_id(
+    session: AsyncSession,
+    pk: int,
+) -> Role | None:
     return await session.get(Role, pk)
 
 
-async def get_role_by_name(session: AsyncSession, name: str) -> Role | None:
+async def get_role_by_name(
+    session: AsyncSession,
+    name: str,
+) -> Role | None:
     query = select(Role).where(Role.name == name)
     result = await session.scalar(query)
     if result:
@@ -32,7 +41,9 @@ async def get_role_by_name(session: AsyncSession, name: str) -> Role | None:
     )
 
 
-async def get_roles_list(session: AsyncSession) -> List[Role]:
+async def get_roles_list(
+    session: AsyncSession,
+) -> List[Role]:
     query = (
         select(Role)
         .options(
@@ -59,7 +70,10 @@ async def update_role(
     return role
 
 
-async def delete_role(session: AsyncSession, role: Role) -> bool:
+async def delete_role(
+    session: AsyncSession,
+    role: Role,
+) -> bool:
     if not role:
         return False
     await session.delete(role)
@@ -67,7 +81,11 @@ async def delete_role(session: AsyncSession, role: Role) -> bool:
     return True
 
 
-async def add_role_to_user(session: AsyncSession, user: User, role: Role):
+async def add_role_to_user(
+    session: AsyncSession,
+    user: User,
+    role: Role,
+) -> User:
     if role not in user.roles:
         user.roles.append(role)
         await session.commit()
@@ -75,7 +93,11 @@ async def add_role_to_user(session: AsyncSession, user: User, role: Role):
     return user
 
 
-async def remove_role_from_user(session: AsyncSession, user: User, role: Role):
+async def remove_role_from_user(
+    session: AsyncSession,
+    user: User,
+    role: Role,
+) -> User:
     if role in user.roles:
         user.roles.remove(role)
         await session.commit()
