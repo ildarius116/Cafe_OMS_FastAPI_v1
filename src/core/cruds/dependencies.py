@@ -70,7 +70,7 @@ async def get_association_by_id(
     )
 
 
-async def get_user_by_id(
+async def get_user_by_id_dep(
     pk: Annotated[int, Path(ge=1, lt=1_000_000)],
     session: AsyncSession = Depends(db_helper.session_dependency),
 ) -> User:

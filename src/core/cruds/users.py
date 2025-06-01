@@ -20,6 +20,13 @@ async def create_user(
     return user
 
 
+async def get_user_by_id(
+    id: int,
+    user_manager: UserManager,
+) -> User:
+    return await user_manager.get(id=id)
+
+
 async def get_user_by_email(
     email: str,
     user_manager: UserManager,

@@ -17,7 +17,7 @@ from src.api.dependencies.authentification import (
 )
 from src.core.authentification.user_manager import UserManager
 from src.core.config import settings
-from src.core.cruds.dependencies import get_user_by_id
+from src.core.cruds.dependencies import get_user_by_id_dep
 from src.core.models import db_helper, User, Role
 
 get_users_db_context = asynccontextmanager(get_users_db)
@@ -64,7 +64,7 @@ async def current_user_optional(
                     lifetime_seconds=settings.access_token.lifetime_seconds,
                 )
                 auth_user = await strategy.read_token(token, user_manager)
-                user = await get_user_by_id(session=session, pk=auth_user.id)
+                user = await get_user_by_id_dep(session=session, pk=auth_user.id)
                 return user
     except Exception:
         return None

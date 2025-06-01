@@ -9,13 +9,14 @@ from src.core.authentification.dependencies import (
     current_user_optional,
 )
 from src.core.authentification.user_manager import UserManager
-from src.core.cruds.dependencies import get_user_by_id
+from src.core.cruds.dependencies import get_user_by_id_dep
 from src.core.models import db_helper, User
 from src.core.cruds.users import (
     create_user,
-    update_user,
-    get_users_list,
     delete_user,
+    get_user_by_id,
+    get_users_list,
+    update_user,
 )
 from src.core.schemas.users import UserCreate, UserUpdate
 
@@ -102,11 +103,11 @@ async def user_create(
 @router.get(
     "/{pk}/",
     name="web/user_detail",
-    dependencies=[permission_required("read_all_users")],
+    dependencies=[permission_required("read_user")],
 )
 async def user_details(
     request: Request,
-    user: User = Depends(get_user_by_id),
+    user: User = Depends(get_user_by_id_dep),
     current_user: User = Depends(current_user_optional),
 ):
 
@@ -128,7 +129,7 @@ async def user_details(
 )
 async def user_update(
     request: Request,
-    user: User = Depends(get_user_by_id),
+    user: User = Depends(get_user_by_id_dep),
     current_user: User = Depends(current_user_optional),
 ):
     if user.id != current_user.id and not any(
@@ -162,7 +163,7 @@ async def user_update(
     user_manager: UserManager = Depends(get_user_manager),
     current_user: User = Depends(current_user_optional),
 ):
-    user = await get_user_by_id(pk=pk, user_manager=user_manager)
+    user = await get_user_by_id(id=pk, user_manager=user_manager)
 
     if user.id != current_user.id and not any(
         (role.name == "admin" or role.name == "superuser")
@@ -209,7 +210,7 @@ async def user_delete(
     user_manager: UserManager = Depends(get_user_manager),
     current_user: User = Depends(current_user_optional),
 ):
-    user = await get_user_by_id(pk=pk, user_manager=user_manager)
+    user = await get_user_by_id(id=pk, user_manager=user_manager)
 
     if user.id == current_user.id:
         raise HTTPException(
