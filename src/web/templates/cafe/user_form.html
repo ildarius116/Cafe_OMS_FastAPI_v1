@@ -34,6 +34,18 @@
                 <small class="text-muted">Оставьте пустым, если не хотите менять пароль</small>
                 {% endif %}
             </div>
+            <div class="mb-3">
+                <label for="role" class="form-label">Роль:</label>
+                <select id="role" name="role" class="form-select" required>
+                    {% for value, label in role.items() %}
+                        <option value="{{ value }}"
+                                {% if (form and form.role == value) or (not form and current_role == value) %}selected{% endif %}>
+                            {{ label }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
             <div class="d-flex justify-content-end gap-2">
                 <a href="{{ url_for('web/users') }}" class="btn btn-secondary">Отмена</a>
                 <button type="submit" class="btn btn-primary">Сохранить</button>

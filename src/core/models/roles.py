@@ -44,13 +44,13 @@ role_permissions = Table(
 
 class Role(Base, IdIntPkMixin):
     __tablename__ = "roles"
-    DEFAULT_USER_ROLES = [
-        ("guest", "Гость"),
-        ("stuff", "Персонал"),
-        ("manager", "Менеджер"),
-        ("admin", "Администратор"),
-        ("superuser", "Суперпользователь"),
-    ]
+    DEFAULT_USER_ROLES = {
+        "guest": "Гость",
+        "stuff": "Персонал",
+        "manager": "Менеджер",
+        "admin": "Администратор",
+        "superuser": "Суперпользователь",
+    }
 
     name: Mapped[str] = mapped_column(nullable=False, unique=True, index=True)
 

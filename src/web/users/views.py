@@ -10,8 +10,12 @@ from src.core.authentification.dependencies import (
 )
 from src.core.authentification.user_manager import UserManager
 from src.core.cruds.dependencies import get_user_by_id_dep
-from src.core.cruds.roles import add_role_to_user, get_role_by_name
-from src.core.models import db_helper, User
+from src.core.cruds.roles import (
+    add_role_to_user,
+    get_role_by_name,
+    remove_role_from_user,
+)
+from src.core.models import db_helper, User, Role
 from src.core.cruds.users import (
     create_user,
     delete_user,
@@ -52,6 +56,8 @@ async def user_create(request: Request):
             "request": request,
             "action_url": request.url_for("web/user_create"),
             "current_email": "",
+            "role": Role.DEFAULT_USER_ROLES,
+            "current_role": None,
             "is_edit": False,
         },
     )
@@ -66,6 +72,7 @@ async def user_create(
     request: Request,
     email: str = Form(...),
     password: str = Form(...),
+    role: str = Form(...),
     user_manager: UserManager = Depends(get_user_manager),
     session: AsyncSession = Depends(db_helper.session_dependency),
 ):
@@ -81,9 +88,16 @@ async def user_create(
             user_manager=user_manager,
             user_create=user_create,
         )
+        print(f"user_create created user: {user}")
         user = await get_user_by_id_dep(session=session, pk=user.id)
-        guest_role = await get_role_by_name(session=session, name="guest")
-        user = await add_role_to_user(session=session, user=user, role=guest_role)
+        print(f"user_create got user: {user}")
+        if role:
+            role = await get_role_by_name(session=session, name=role)
+        else:
+            role = await get_role_by_name(session=session, name="guest")
+        print(f"user_create guest_role: {role}")
+        user = await add_role_to_user(session=session, user=user, role=role)
+        print(f"user_create guest user: {user}")
         return RedirectResponse(
             url=request.url_for("web/user_detail", pk=user.id), status_code=302
         )
@@ -98,6 +112,7 @@ async def user_create(
             "request": request,
             "action_url": request.url_for("web/user_create"),
             "current_email": email,
+            "current_role": None,
             "error": error_msg,
             "is_edit": False,
         },
@@ -149,6 +164,8 @@ async def user_update(
             "request": request,
             "action_url": request.url_for("web/user_update", pk=user.id),
             "current_email": user.email,
+            "role": Role.DEFAULT_USER_ROLES,
+            "current_role": user.roles[0],
             "is_edit": True,
             "user": user,
         },
@@ -165,8 +182,10 @@ async def user_update(
     pk: int = Path(...),
     email: str = Form(...),
     password: str = Form(default=None),
+    role: str = Form(...),
     user_manager: UserManager = Depends(get_user_manager),
     current_user: User = Depends(current_user_optional),
+    session: AsyncSession = Depends(db_helper.session_dependency),
 ):
     user = await get_user_by_id(id=pk, user_manager=user_manager)
 
@@ -180,11 +199,23 @@ async def user_update(
         update_data = UserUpdate(email=email)
         if password:
             update_data.password = password
+
         await update_user(
             user=user,
             user_manager=user_manager,
             user_update=update_data,
         )
+        if role:
+            user = await get_user_by_id_dep(session=session, pk=user.id)
+            if role != user.roles[0]:
+                role_to_delete = await get_role_by_name(
+                    session=session, name=user.roles[0].name
+                )
+                user = await remove_role_from_user(
+                    session=session, user=user, role=role_to_delete
+                )
+                role = await get_role_by_name(session=session, name=role)
+                user = await add_role_to_user(session=session, user=user, role=role)
         return RedirectResponse(
             url=request.url_for("web/user_detail", pk=user.id), status_code=302
         )
@@ -196,6 +227,7 @@ async def user_update(
                 "request": request,
                 "action_url": request.url_for("web/user_update", pk=user.id),
                 "current_email": email,
+                "current_role": user.roles[0],
                 "error": str(e),
                 "is_edit": True,
                 "user": user,
